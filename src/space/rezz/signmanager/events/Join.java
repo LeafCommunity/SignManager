@@ -13,24 +13,24 @@ import space.rezz.signmanager.Send.messageMode;
 import space.rezz.signmanager.SignManager;
 
 public class Join implements Listener{
-	@EventHandler
-	public void joinEvent(PlayerJoinEvent event){
-		Player player = event.getPlayer();
-		if (player.hasPermission("signmanager.command")){
-			if (Clipboard.hasPastes(player)){
-				new BukkitRunnable() {
-					@Override
-					public void run(){
-						int pastes = Clipboard.getPastes(player);
-						Send.message(player, messageMode.NORMAL, "You still have leftover pastes!\n" 
-								+ "&rRemaining pastes: &b&o" + pastes + " &3. . . &bClipboard content:\n"
-									+ Clipboard.getFormattedLinesMessage(player)); 
-						if (pastes < 1){
-							player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lWARNING:&7 You have unlimited pastes remaining.\nTo clear your clipboard, do &o/sign cancel"));
-						}
-					}
-				}.runTaskLater(SignManager.getPlugin(SignManager.class), 20);
-			}
-		}
-	}
+    @EventHandler
+    public void joinEvent(PlayerJoinEvent event){
+        Player player = event.getPlayer();
+        if (player.hasPermission("signmanager.command")){
+            if (Clipboard.hasPastes(player)){
+                new BukkitRunnable() {
+                    @Override
+                    public void run(){
+                        int pastes = Clipboard.getPastes(player);
+                        Send.message(player, messageMode.NORMAL, "You still have leftover pastes!\n" 
+                                + "&rRemaining pastes: &b&o" + pastes + " &3. . . &bClipboard content:\n"
+                                    + Clipboard.getFormattedLinesMessage(player)); 
+                        if (pastes < 1){
+                            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lWARNING:&7 You have unlimited pastes remaining.\nTo clear your clipboard, do &o/sign cancel"));
+                        }
+                    }
+                }.runTaskLater(SignManager.getPlugin(SignManager.class), 20);
+            }
+        }
+    }
 }

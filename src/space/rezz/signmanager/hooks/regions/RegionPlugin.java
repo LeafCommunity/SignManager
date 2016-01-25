@@ -5,6 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public interface RegionPlugin {
-	Plugin getPlugin();
-	boolean canBuild(Player player, Block block);
+    Plugin getPlugin();
+    boolean canBuild(Player player, Block block);
 }
