@@ -1,5 +1,7 @@
 package space.rezz.signmanager;
 
+import java.io.IOException;
+
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -10,6 +12,7 @@ import space.rezz.signmanager.events.SignChange;
 import space.rezz.signmanager.events.SignClick;
 import space.rezz.signmanager.hooks.Loggers;
 import space.rezz.signmanager.hooks.Regions;
+import space.rezz.signmanager.metrics.MetricsLite;
 
 public class SignManager extends JavaPlugin{
     
@@ -35,6 +38,14 @@ public class SignManager extends JavaPlugin{
         
         Regions.load();
         Loggers.load();
+        
+        try {
+            MetricsLite metrics = new MetricsLite(this);
+            metrics.start();
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+        }
+        
     }
     
     @Override
