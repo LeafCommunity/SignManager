@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import space.rezz.signmanager.Clipboard;
 import space.rezz.signmanager.Send;
 import space.rezz.signmanager.Send.messageMode;
+import space.rezz.signmanager.hooks.Loggers;
 import space.rezz.signmanager.hooks.Regions;
 
 public class SignClick implements Listener{
@@ -76,6 +77,7 @@ public class SignClick implements Listener{
                             }
                             sign.update();
                             event.setCancelled(true);
+                            Loggers.log(player, block);
                         } else {
                             Send.message(player, messageMode.ERROR, "You can't paste a sign here!");
                         }

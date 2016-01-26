@@ -18,9 +18,9 @@ public class GriefPrev implements RegionPlugin{
     
     public GriefPrev(){
         this.plugin = SignManager.getInstance().getServer().getPluginManager().getPlugin("GriefPrevention");
-    if (!(plugin == null)){
-        this.loaded = true;
-        Send.status(messageMode.INFO, "Enabled support for GriefPrevention.");
+        if (!(plugin == null)){
+            this.loaded = true;
+            Send.status(messageMode.INFO, "Enabled support for GriefPrevention.");
         }
     }
 

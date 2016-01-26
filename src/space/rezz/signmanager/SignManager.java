@@ -8,6 +8,7 @@ import space.rezz.signmanager.commands.SignCmd;
 import space.rezz.signmanager.events.Join;
 import space.rezz.signmanager.events.SignChange;
 import space.rezz.signmanager.events.SignClick;
+import space.rezz.signmanager.hooks.Loggers;
 import space.rezz.signmanager.hooks.Regions;
 
 public class SignManager extends JavaPlugin{
@@ -33,6 +34,7 @@ public class SignManager extends JavaPlugin{
         Send.status(messageMode.NORMAL, "Loaded SignManager &6by RezzedUp");
         
         Regions.load();
+        Loggers.load();
     }
     
     @Override
