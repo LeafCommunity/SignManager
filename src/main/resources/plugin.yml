@@ -2,3 +2,20 @@ name: ${name}
 main: ${groupId}.${artifactId}.${name}
 version: ${version}
 author: ${author}
+commands:
+  sign:
+    aliases: [signmanager, sm, signedit, se, editsign, managesign]
+    description: Modify a sign.
+permissions:
+  signmanager.*:
+    description: Allows access to all com.rezzedup.signmanager.SignManager features.
+    default: op
+    children:
+      signmanager.colors: true
+      signmanager.command: true
+  signmanager.colors:
+    description: Gives players the ability to create colorful signs.
+    default: op
+  signmanager.command:
+    description: Allows usage to the /sign command.
+    default: op

@@ -1,46 +1,72 @@
 package com.rezzedup.signmanager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-public class Send {
-    public static enum messageMode{
+public class Send
+{
+    public enum Mode
+    {
         NORMAL, ERROR, INFO, BLANK;
     }
-    
-    public static void status(messageMode mode, String message){
-        ConsoleCommandSender console = SignManager.getInstance().getServer().getConsoleSender();
-        String msg = "";
-        
-        switch (mode){
-            case NORMAL:     msg = "[SignManager] &e" + message;
-                             break;
-            case ERROR:        msg = "[SignManager] &cError:&r " + message;
-                            break;
-            case INFO:        msg = "[SignManager] Info:&r &b" + message;
-                            break;
-            default:        // BLANK mode
-                            msg = "[SignManager] " + message;
-                            break;
+
+    private static String getConsolePrefix(Mode mode)
+    {
+        String prefix = "&f[SignManager] &r";
+        switch (mode)
+        {
+            case NORMAL:
+                return prefix + "&e";
+            case ERROR:
+                return prefix + "&cError: &r";
+            case INFO:
+                return prefix + "Info: &b";
+            default:
+                return  prefix;
         }
-        
-        console.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
     }
-    
-    public static void message(Player player, messageMode mode, String message){
-        String msg = "";
-        
+
+    private static String getPlayerPrefix(Mode mode)
+    {
+        String prefix = "SignManager &l>&r ";
+
         switch (mode){
-            case NORMAL:     msg = "SignManager &l>&r &3" + message;
-                             break;
-            case ERROR:        msg = "SignManager &l>&r &oError: &c" + message;
-                            break;
-            default:        // BLANK mode
-                            msg = message;
-                            break;
+            case NORMAL:
+                return prefix + "&3";
+            case ERROR:
+                return "&oError: &c";
+            default:
+                return prefix;
         }
-        
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
+    }
+
+    private static void message(CommandSender sender, String message)
+    {
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
+    public static void message(Mode mode, String message)
+    {
+        message(Bukkit.getServer().getConsoleSender(), getConsolePrefix(mode) + message);
+    }
+
+    public static void message(Mode mode, CommandSender sender, String message)
+    {
+        if (sender instanceof ConsoleCommandSender)
+        {
+            message(sender, getConsolePrefix(mode) + message);
+        }
+        else
+        {
+            message(sender, getPlayerPrefix(mode) + message);
+        }
+    }
+
+    public static void message(Mode mode, Player player, String message)
+    {
+        message(mode, player, message);
     }
 }

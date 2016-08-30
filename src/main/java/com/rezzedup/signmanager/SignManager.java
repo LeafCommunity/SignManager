@@ -1,55 +1,53 @@
 package com.rezzedup.signmanager;
 
-import java.io.IOException;
-
-import com.rezzedup.signmanager.events.SignChange;
-import com.rezzedup.signmanager.hooks.Loggers;
-import com.rezzedup.signmanager.hooks.Regions;
-import com.rezzedup.signmanager.metrics.MetricsLite;
-import org.bukkit.Server;
+import com.rezzedup.signmanager.clipboard.Clipboard;
+import com.rezzedup.signmanager.event.ClipboardReminder;
+import com.rezzedup.signmanager.event.ColorizeSigns;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.rezzedup.signmanager.Send.messageMode;
-import com.rezzedup.signmanager.commands.SignCmd;
-import com.rezzedup.signmanager.events.Join;
-import com.rezzedup.signmanager.events.SignClick;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-public class SignManager extends JavaPlugin{
-    
-    private static SignManager instance;
-    private final Server server = getServer();
-    
-    public SignManager(){
-        instance = this;
-    }
-    
-    public static SignManager getInstance(){
-        return instance;
-    }
-    
+public class SignManager extends JavaPlugin
+{
+    private final Map<UUID, Clipboard> clipboards = new HashMap<>();
+
     @Override
-    public void onEnable(){
-        server.getPluginManager().registerEvents(new SignChange(), this);
-        server.getPluginManager().registerEvents(new SignClick(), this);
-        server.getPluginManager().registerEvents(new Join(), this);
-        this.getCommand("sign").setExecutor(new SignCmd());
-        
-        Send.status(messageMode.NORMAL, "Loaded SignManager &6by RezzedUp");
-        
-        Regions.load();
-        Loggers.load();
-        
-        try {
-            MetricsLite metrics = new MetricsLite(this);
-            metrics.start();
-        } catch (IOException e) {
-            // Failed to submit the stats :-(
+    public void onEnable()
+    {
+        getCommand("sign").setExecutor(new SignCommand(this));
+
+        new BuildPermission(this);
+        new ClipboardReminder(this);
+        new ColorizeSigns(this);
+    }
+
+    public Clipboard getClipboard(Player player)
+    {
+        return getClipboard(player.getUniqueId());
+    }
+
+    public Clipboard getClipboard(UUID uuid)
+    {
+        if (clipboards.containsKey(uuid))
+        {
+            return clipboards.get(uuid);
         }
-        
+        else
+        {
+            return clipboards.put(uuid, new Clipboard());
+        }
     }
-    
-    @Override
-    public void onDisable(){
-        Send.status(messageMode.NORMAL, "Unloaded.");
+
+    public boolean hasClipboard(Player player)
+    {
+        return hasClipboard(player.getUniqueId());
+    }
+
+    public boolean hasClipboard(UUID uuid)
+    {
+        return clipboards.containsKey(uuid);
     }
 }
