@@ -1,5 +1,7 @@
-package space.rezz.signmanager.events;
+package com.rezzedup.signmanager.events;
 
+import com.rezzedup.signmanager.Clipboard;
+import com.rezzedup.signmanager.SignManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,10 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import space.rezz.signmanager.Clipboard;
-import space.rezz.signmanager.Send;
-import space.rezz.signmanager.Send.messageMode;
-import space.rezz.signmanager.SignManager;
+import com.rezzedup.signmanager.Send;
+import com.rezzedup.signmanager.Send.messageMode;
 
 public class Join implements Listener{
     @EventHandler

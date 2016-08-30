@@ -1,15 +1,13 @@
-package space.rezz.signmanager.hooks.regions;
+package com.rezzedup.signmanager.hooks.regions;
 
+import com.rezzedup.signmanager.Send;
+import com.rezzedup.signmanager.SignManager;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
-import space.rezz.signmanager.Send;
-import space.rezz.signmanager.Send.messageMode;
-import space.rezz.signmanager.SignManager;
 
 public class GriefPrev implements RegionPlugin{
     
@@ -20,7 +18,7 @@ public class GriefPrev implements RegionPlugin{
         this.plugin = SignManager.getInstance().getServer().getPluginManager().getPlugin("GriefPrevention");
         if (!(plugin == null)){
             this.loaded = true;
-            Send.status(messageMode.INFO, "Enabled support for GriefPrevention.");
+            Send.status(Send.messageMode.INFO, "Enabled support for GriefPrevention.");
         }
     }
 

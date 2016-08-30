@@ -1,18 +1,18 @@
-package space.rezz.signmanager;
+package com.rezzedup.signmanager;
 
 import java.io.IOException;
 
+import com.rezzedup.signmanager.events.SignChange;
+import com.rezzedup.signmanager.hooks.Loggers;
+import com.rezzedup.signmanager.hooks.Regions;
+import com.rezzedup.signmanager.metrics.MetricsLite;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import space.rezz.signmanager.Send.messageMode;
-import space.rezz.signmanager.commands.SignCmd;
-import space.rezz.signmanager.events.Join;
-import space.rezz.signmanager.events.SignChange;
-import space.rezz.signmanager.events.SignClick;
-import space.rezz.signmanager.hooks.Loggers;
-import space.rezz.signmanager.hooks.Regions;
-import space.rezz.signmanager.metrics.MetricsLite;
+import com.rezzedup.signmanager.Send.messageMode;
+import com.rezzedup.signmanager.commands.SignCmd;
+import com.rezzedup.signmanager.events.Join;
+import com.rezzedup.signmanager.events.SignClick;
 
 public class SignManager extends JavaPlugin{
     

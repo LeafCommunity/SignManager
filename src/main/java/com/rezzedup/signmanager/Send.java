@@ -1,4 +1,4 @@
-package space.rezz.signmanager;
+package com.rezzedup.signmanager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;

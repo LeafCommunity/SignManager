@@ -1,4 +1,4 @@
-package space.rezz.signmanager.hooks.regions;
+package com.rezzedup.signmanager.hooks.regions;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -6,9 +6,9 @@ import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
-import space.rezz.signmanager.Send;
-import space.rezz.signmanager.SignManager;
-import space.rezz.signmanager.Send.messageMode;
+import com.rezzedup.signmanager.Send;
+import com.rezzedup.signmanager.SignManager;
+import com.rezzedup.signmanager.Send.messageMode;
 
 public class WorldGuard implements RegionPlugin{
     

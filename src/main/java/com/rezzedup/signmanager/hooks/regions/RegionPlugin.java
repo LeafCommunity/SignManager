@@ -1,4 +1,4 @@
-package space.rezz.signmanager.hooks.regions;
+package com.rezzedup.signmanager.hooks.regions;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

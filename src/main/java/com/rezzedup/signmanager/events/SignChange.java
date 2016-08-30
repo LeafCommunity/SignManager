@@ -1,4 +1,4 @@
-package space.rezz.signmanager.events;
+package com.rezzedup.signmanager.events;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

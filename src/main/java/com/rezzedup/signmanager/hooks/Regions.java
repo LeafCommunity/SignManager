@@ -1,10 +1,10 @@
-package space.rezz.signmanager.hooks;
+package com.rezzedup.signmanager.hooks;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import space.rezz.signmanager.hooks.regions.GriefPrev;
-import space.rezz.signmanager.hooks.regions.WorldGuard;
+import com.rezzedup.signmanager.hooks.regions.GriefPrev;
+import com.rezzedup.signmanager.hooks.regions.WorldGuard;
 
 public class Regions {
     private static WorldGuard wg = new WorldGuard();

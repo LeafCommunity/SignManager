@@ -1,9 +1,8 @@
-package space.rezz.signmanager.hooks;
+package com.rezzedup.signmanager.hooks;
 
+import com.rezzedup.signmanager.hooks.loggers.CoreProt;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-
-import space.rezz.signmanager.hooks.loggers.CoreProt;
 
 public class Loggers {
     private static CoreProt cp = new CoreProt();

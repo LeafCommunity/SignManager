@@ -1,4 +1,4 @@
-package space.rezz.signmanager.hooks.loggers;
+package com.rezzedup.signmanager.hooks.loggers;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

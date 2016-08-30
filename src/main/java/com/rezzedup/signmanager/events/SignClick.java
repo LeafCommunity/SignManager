@@ -1,5 +1,9 @@
-package space.rezz.signmanager.events;
+package com.rezzedup.signmanager.events;
 
+import com.rezzedup.signmanager.Clipboard;
+import com.rezzedup.signmanager.Send;
+import com.rezzedup.signmanager.hooks.Loggers;
+import com.rezzedup.signmanager.hooks.Regions;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,12 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
-
-import space.rezz.signmanager.Clipboard;
-import space.rezz.signmanager.Send;
-import space.rezz.signmanager.Send.messageMode;
-import space.rezz.signmanager.hooks.Loggers;
-import space.rezz.signmanager.hooks.Regions;
 
 public class SignClick implements Listener{
     @EventHandler
@@ -44,17 +42,17 @@ public class SignClick implements Listener{
                                 }
                                 if (tempLines[line - 1].equalsIgnoreCase("")){
                                     Clipboard.clear(player);
-                                    Send.message(player, messageMode.ERROR, "The line you're trying to copy is empty!");
+                                    Send.message(player, Send.messageMode.ERROR, "The line you're trying to copy is empty!");
                                     cancel = true;
                                 }
                                 else{
                                     Clipboard.set(player, Clipboard.getPastes(player), tempLines);
                                 }
                             }
-                            if (!cancel) Send.message(player, messageMode.NORMAL, "Copied to clipboard. Click a sign to paste.\n" + Clipboard.getFormattedLinesMessage(player));
+                            if (!cancel) Send.message(player, Send.messageMode.NORMAL, "Copied to clipboard. Click a sign to paste.\n" + Clipboard.getFormattedLinesMessage(player));
                             event.setCancelled(true);
                         } else {
-                            Send.message(player, messageMode.ERROR, "You can't copy this sign!");
+                            Send.message(player, Send.messageMode.ERROR, "You can't copy this sign!");
                         }
                     }
                     /*
@@ -79,7 +77,7 @@ public class SignClick implements Listener{
                             event.setCancelled(true);
                             Loggers.log(player, block);
                         } else {
-                            Send.message(player, messageMode.ERROR, "You can't paste a sign here!");
+                            Send.message(player, Send.messageMode.ERROR, "You can't paste a sign here!");
                         }
                     }
                 }

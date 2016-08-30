@@ -1,4 +1,4 @@
-package space.rezz.signmanager.hooks.loggers;
+package com.rezzedup.signmanager.hooks.loggers;
 
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
@@ -7,9 +7,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import space.rezz.signmanager.Send;
-import space.rezz.signmanager.SignManager;
-import space.rezz.signmanager.Send.messageMode;
+import com.rezzedup.signmanager.Send;
+import com.rezzedup.signmanager.SignManager;
+import com.rezzedup.signmanager.Send.messageMode;
 
 public class CoreProt implements LoggerPlugin{
     

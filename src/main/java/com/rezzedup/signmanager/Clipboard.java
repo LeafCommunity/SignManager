@@ -1,4 +1,4 @@
-package space.rezz.signmanager;
+package com.rezzedup.signmanager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import space.rezz.signmanager.Send.messageMode;
+import com.rezzedup.signmanager.Send.messageMode;
 
 public class Clipboard {
     private static HashMap<UUID, String[]> storage = new HashMap<UUID, String[]>();

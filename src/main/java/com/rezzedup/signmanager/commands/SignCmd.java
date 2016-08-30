@@ -1,13 +1,11 @@
-package space.rezz.signmanager.commands;
+package com.rezzedup.signmanager.commands;
 
+import com.rezzedup.signmanager.Clipboard;
+import com.rezzedup.signmanager.Send;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import space.rezz.signmanager.Clipboard;
-import space.rezz.signmanager.Send;
-import space.rezz.signmanager.Send.messageMode;
 
 public class SignCmd implements CommandExecutor{    
     @Override
@@ -33,7 +31,7 @@ public class SignCmd implements CommandExecutor{
                         help += " &r&b/sign cancel\n";
                         help += "   &r&3Tip:&o Use this to clear your Clipboard.\n";
                         help += "&r&m------------------------------------";
-                        Send.message(player, messageMode.NORMAL, help);
+                        Send.message(player, Send.messageMode.NORMAL, help);
                     }
                     /*
                      *   /sign set
@@ -47,7 +45,7 @@ public class SignCmd implements CommandExecutor{
                                 playerLine = Integer.parseInt(args[1]);
                             }
                             catch(NumberFormatException exception){
-                                Send.message(player, messageMode.ERROR, "\"" + args[1] + "\" is invalid. Defaulting to &oline 1&c.");
+                                Send.message(player, Send.messageMode.ERROR, "\"" + args[1] + "\" is invalid. Defaulting to &oline 1&c.");
                             }
                             if (playerLine > 0 && playerLine < 5){
                                 if (Clipboard.isCopying(player)) Clipboard.setCopyStatus(player, false);
@@ -72,11 +70,11 @@ public class SignCmd implements CommandExecutor{
                                 }
                                 Clipboard.set(player, 1, lines);
                                 
-                                Send.message(player, messageMode.NORMAL, "Copied to clipboard. Click a sign to paste.");
+                                Send.message(player, Send.messageMode.NORMAL, "Copied to clipboard. Click a sign to paste.");
                                 
-                            }else Send.message(player, messageMode.ERROR, "Line number must be 1-4.");
+                            }else Send.message(player, Send.messageMode.ERROR, "Line number must be 1-4.");
                             
-                        }else Send.message(player, messageMode.ERROR, "Missing content to set.");
+                        }else Send.message(player, Send.messageMode.ERROR, "Missing content to set.");
                     }
                     /*
                      *   /sign copy
@@ -90,12 +88,12 @@ public class SignCmd implements CommandExecutor{
                                 persistence = Integer.parseInt(args[1]);
                             }
                             catch(NumberFormatException exception){
-                                Send.message(player, messageMode.ERROR, "\"" + args[1] + "\" is invalid. Defaulting to &o1&c.");
+                                Send.message(player, Send.messageMode.ERROR, "\"" + args[1] + "\" is invalid. Defaulting to &o1&c.");
                             }
                         }
                         Clipboard.setCopyStatus(player, true);
                         Clipboard.setPastes(player, persistence);
-                        Send.message(player, messageMode.NORMAL, "Click a sign to copy.");
+                        Send.message(player, Send.messageMode.NORMAL, "Click a sign to copy.");
                     }
                     //copy specific sign line
                     /*
@@ -112,15 +110,15 @@ public class SignCmd implements CommandExecutor{
                                     else persistence = Integer.parseInt(args[i]);
                                 }
                                 catch(NumberFormatException exception){
-                                    Send.message(player, messageMode.ERROR, "\"" + args[i] + "\" is invalid. Defaulting to &o1&c.");
+                                    Send.message(player, Send.messageMode.ERROR, "\"" + args[i] + "\" is invalid. Defaulting to &o1&c.");
                                 }
-                            } else if (i < 2) Send.message(player, messageMode.ERROR, "Defaulting to &oline 1&c.");
+                            } else if (i < 2) Send.message(player, Send.messageMode.ERROR, "Defaulting to &oline 1&c.");
                         }
                         if (line > 0 && line < 5){
                             Clipboard.setCopyLine(player, line);
                             Clipboard.setPastes(player, persistence);
-                            Send.message(player, messageMode.NORMAL, "Click a sign to copy.");
-                        } else Send.message(player, messageMode.ERROR, "Line must be 1-4.");
+                            Send.message(player, Send.messageMode.NORMAL, "Click a sign to copy.");
+                        } else Send.message(player, Send.messageMode.ERROR, "Line must be 1-4.");
                     }
                     /*
                      *   /sign cancel
@@ -129,25 +127,25 @@ public class SignCmd implements CommandExecutor{
                      */
                     else if (args[0].equalsIgnoreCase("cancel") || args[0].equalsIgnoreCase("stop") || args[0].equalsIgnoreCase("clear")){
                         Clipboard.clear(player);
-                        Send.message(player, messageMode.NORMAL, "Cleared your clipboard.");
+                        Send.message(player, Send.messageMode.NORMAL, "Cleared your clipboard.");
                     }
                     // Invalid argument
                     else {
-                        Send.message(player, messageMode.ERROR, "Unknown argument.");
+                        Send.message(player, Send.messageMode.ERROR, "Unknown argument.");
                     }
                 // No arguments given
                 } else {
-                    Send.message(player, messageMode.NORMAL, "For command usage, do &b/sign help");
+                    Send.message(player, Send.messageMode.NORMAL, "For command usage, do &b/sign help");
                 }
             
             // No permission
-            }else Send.message(player, messageMode.ERROR, "You don't have permission to use this.");
+            }else Send.message(player, Send.messageMode.ERROR, "You don't have permission to use this.");
     
             return true;
         }
         else{
             // Command sender is not a player
-            Send.status(messageMode.NORMAL, "Only players may execute this command.");
+            Send.status(Send.messageMode.NORMAL, "Only players may execute this command.");
         }
         return false;
     }
