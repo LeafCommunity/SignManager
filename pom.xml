@@ -6,7 +6,7 @@
 
     <groupId>com.rezzedup</groupId>
     <artifactId>signmanager</artifactId>
-    <name>com.rezzedup.signmanager.SignManager</name>
+    <name>SignManager</name>
     <version>2.0</version>
 
     <properties>

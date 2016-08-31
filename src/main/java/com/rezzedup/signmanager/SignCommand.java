@@ -90,7 +90,7 @@ public class SignCommand implements CommandExecutor
         return true;
     }
 
-    int parseLine(Player player, String arg)
+    private int parseLine(Player player, String arg)
     {
         int line = 1;
 
@@ -116,7 +116,7 @@ public class SignCommand implements CommandExecutor
         return line;
     }
 
-    int parsePastes(Player player, String arg)
+    private int parsePastes(Player player, String arg)
     {
         try
         {
@@ -129,7 +129,7 @@ public class SignCommand implements CommandExecutor
         }
     }
 
-    boolean setLine(Player player, String[] args)
+    private boolean setLine(Player player, String[] args)
     {
         if (args.length <= 2)
         {
@@ -150,7 +150,7 @@ public class SignCommand implements CommandExecutor
         return true;
     }
 
-    boolean copy(Player player, String[] args)
+    private boolean copy(Player player, String[] args)
     {
         int pastes = (args.length > 1) ? parsePastes(player, args[1]) : 1;
         Clipboard clipboard = plugin.getClipboard(player);
@@ -165,7 +165,7 @@ public class SignCommand implements CommandExecutor
         return true;
     }
 
-    boolean copyLine(Player player, String[] args)
+    private boolean copyLine(Player player, String[] args)
     {
         if (args.length <= 1)
         {
@@ -187,7 +187,7 @@ public class SignCommand implements CommandExecutor
         return true;
     }
 
-    boolean cancel(Player player, String[] args)
+    private boolean cancel(Player player, String[] args)
     {
         plugin.getClipboard(player).clear();
         Send.message(Send.Mode.NORMAL, player, "Cleared your clipboard.");

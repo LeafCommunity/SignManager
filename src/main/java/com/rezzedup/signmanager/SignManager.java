@@ -3,6 +3,7 @@ package com.rezzedup.signmanager;
 import com.rezzedup.signmanager.clipboard.Clipboard;
 import com.rezzedup.signmanager.event.ClipboardReminder;
 import com.rezzedup.signmanager.event.ColorizeSigns;
+import com.rezzedup.signmanager.event.CopyPasteSigns;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,8 +21,17 @@ public class SignManager extends JavaPlugin
         getCommand("sign").setExecutor(new SignCommand(this));
 
         new BuildPermission(this);
+        new CopyPasteSigns(this);
         new ClipboardReminder(this);
         new ColorizeSigns(this);
+
+        Send.message(Send.Mode.NORMAL, "Loaded SignManager &6by RezzedUp");
+    }
+
+    @Override
+    public void onDisable()
+    {
+        Send.message(Send.Mode.NORMAL, "Unloaded.");
     }
 
     public Clipboard getClipboard(Player player)
@@ -37,7 +47,8 @@ public class SignManager extends JavaPlugin
         }
         else
         {
-            return clipboards.put(uuid, new Clipboard());
+            clipboards.put(uuid, new Clipboard());
+            return getClipboard(uuid);
         }
     }
 

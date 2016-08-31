@@ -64,9 +64,4 @@ public class Send
             message(sender, getPlayerPrefix(mode) + message);
         }
     }
-
-    public static void message(Mode mode, Player player, String message)
-    {
-        message(mode, player, message);
-    }
 }

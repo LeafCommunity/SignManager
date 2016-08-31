@@ -32,6 +32,11 @@ public class BuildPermission implements Listener
         }
     }
 
+    /**
+     * BuildPermission constructor - pass your plugin's instance to allow events to be registered.
+     * Checking build permissions won't work if these events aren't registered.
+     * @param plugin Instance of your plugin.
+     */
     public BuildPermission(Plugin plugin)
     {
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -52,16 +57,35 @@ public class BuildPermission implements Listener
         }
     }
 
+    /**
+     * Check if a player can build based on where they're standing.
+     * The player's location is converted to a block for checking.
+     * @param player Player to check.
+     * @return Whether a player has permission to build where they're standing or not.
+     */
     public static boolean check(Player player)
     {
         return check(player, player.getLocation());
     }
 
+    /**
+     * Check if a player can build based on a specific location.
+     * The block at the given location is used for checking.
+     * @param player Player to check.
+     * @param location Location to check (converted to a block).
+     * @return Whether a player has permission to build or not.
+     */
     public static boolean check(Player player, Location location)
     {
         return check(player, location.getBlock());
     }
 
+    /**
+     * Check if a player can build based on a specific block.
+     * @param player Player to check.
+     * @param block Block to check.
+     * @return Whether a player has permission to build or not.
+     */
     public static boolean check(Player player, Block block)
     {
         BreakPermissionEvent event = new BreakPermissionEvent(block, player);

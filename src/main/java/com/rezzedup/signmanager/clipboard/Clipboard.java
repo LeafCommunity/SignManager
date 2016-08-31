@@ -1,5 +1,6 @@
 package com.rezzedup.signmanager.clipboard;
 
+import com.rezzedup.signmanager.Debug;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Sign;
 
@@ -65,12 +66,12 @@ public class Clipboard
 
     public int getPastes()
     {
-        return this.pastes;
+        return pastes;
     }
 
     public void setPastes(int pastes)
     {
-        pastes = pastes;
+        this.pastes = pastes;
     }
 
     public void setUnlimitedPastes()
@@ -147,7 +148,7 @@ public class Clipboard
         {
             if (!content.isEmpty())
             {
-                message += "&8" + line + ": &7" + line + " &8| ";
+                message += "&8" + line + ": &7" + content + " &8| ";
             }
             line += 1;
         }
