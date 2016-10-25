@@ -8,7 +8,7 @@ commands:
     description: Modify a sign.
 permissions:
   signmanager.*:
-    description: Allows access to all com.rezzedup.signmanager.SignManager features.
+    description: Allows access to all SignManager features.
     default: op
     children:
       signmanager.colors: true

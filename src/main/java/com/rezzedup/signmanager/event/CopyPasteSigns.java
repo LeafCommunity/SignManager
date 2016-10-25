@@ -96,7 +96,7 @@ public class CopyPasteSigns implements Listener
     {
         if (BuildPermission.check(player, block))
         {
-            clipboard.paste(sign, player.hasPermission("signmanager.colorize"));
+            clipboard.paste(sign, player.hasPermission("signmanager.colors"));
 
             if (clipboard.hasPastes())
             {
