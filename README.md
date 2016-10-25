@@ -30,7 +30,7 @@
     * *Sets the first line of a sign to "This is line #1!"*
   * **Example:** `/sign set 3 &bI &3love &1this`
     * *Sets the third line of a sign to "&bI &3love &1this"*
-    * *If the player also has the **signmanager.colors** permision, the color codes will be converted automatically.*
+    * _If the player also has the **signmanager.colors** permision, the color codes will be converted automatically._
 
 **/sign copy** *[optional: \<pastes>]*
 * Copy an entire sign to your SignManager clipboard. Click on another sign to paste.
@@ -61,5 +61,5 @@ Players with **op** automatically have all necessary permissions to use this plu
   * Allows players to use & color codes on their signs
 * **signmanager.command**
   * Gives access to the /sign command
-* **signmanager.***
+* **signmanager.\***
   * All SignManager permissions
