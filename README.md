@@ -2,6 +2,8 @@
 
 ### A sign editing plugin **by RezzedUp**
 
+SignManager is an all-in-one sign editing plugin allowing players to copy, paste, and modify signs that have already been placed. Editing a single line on a sign is as easy as typing a command and clicking the sign to modify.
+
 &nbsp;
 
 ## ![Features](images/features.png)
@@ -61,5 +63,5 @@ Players with **op** automatically have all necessary permissions to use this plu
   * Allows players to use & color codes on their signs
 * **signmanager.command**
   * Gives access to the /sign command
-* **signmanager.\***
+* **signmanager.***
   * All SignManager permissions
