@@ -2,8 +2,9 @@ package com.rezzedup.signmanager;
 
 import com.rezzedup.signmanager.clipboard.Clipboard;
 import com.rezzedup.signmanager.event.ClipboardReminder;
-import com.rezzedup.signmanager.event.ColorizeSigns;
-import com.rezzedup.signmanager.event.CopyPasteSigns;
+import com.rezzedup.signmanager.event.SignColorListener;
+import com.rezzedup.signmanager.event.SignCopyPasteListener;
+import com.rezzedup.signmanager.event.SignExploitListener;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,12 +19,21 @@ public class SignManager extends JavaPlugin
     @Override
     public void onEnable()
     {
+        saveDefaultConfig();
+        
+        Debug.setEnabled(getConfig().getBoolean("debug"));
+        
         getCommand("sign").setExecutor(new SignCommand(this));
 
         new BuildPermission(this);
-        new CopyPasteSigns(this);
+        new SignCopyPasteListener(this);
         new ClipboardReminder(this);
-        new ColorizeSigns(this);
+        new SignColorListener(this);
+        
+        if (getConfig().getBoolean("sign-crash.prevent-exploits"))
+        {
+            new SignExploitListener(this);
+        }
 
         Send.message(Send.Mode.NORMAL, "Loaded SignManager &6by RezzedUp");
     }

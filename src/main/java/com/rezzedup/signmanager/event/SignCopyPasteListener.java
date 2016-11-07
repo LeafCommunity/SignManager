@@ -12,13 +12,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class CopyPasteSigns implements Listener
+public class SignCopyPasteListener implements Listener
 {
-    private SignManager plugin;
+    private final SignManager plugin;
 
-    public CopyPasteSigns(SignManager plugin)
+    public SignCopyPasteListener(SignManager plugin)
     {
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -110,6 +111,7 @@ public class CopyPasteSigns implements Listener
                 }
             }
             event.setCancelled(true);
+            Bukkit.getPluginManager().callEvent(new SignChangeEvent(block, player, sign.getLines()));
         }
     }
 }

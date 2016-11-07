@@ -1,0 +1,24 @@
+debug: false
+
+#
+# Sign exploit options for servers running vulnerable server versions.
+# This is only useful for servers running 1.8.7 or less (1.7.x, etc.)
+#
+sign-crash:
+
+  # Whether or not SignManager should check for crashing sign exploits.
+  prevent-exploits: true
+  
+  # Command to execute when a player attempts to exploit a sign.
+  exploit-punishment: '/ban %player% Attempting exploit signs.'
+  
+  # Message to broadcast when a player is caught creating a crashing sign.
+  exploit-broadcast: 'SignManager: &4&lWARNING!&f %player% attempted to create an exploited sign @ %location%'
+  
+  # Permission required to receive exploit broadcasts.
+  broadcast-permission: 'signmanager.admin'
+
+#
+# DO NOT CHANGE MANUALLY. It could alter future updates.
+#
+version: ${version}

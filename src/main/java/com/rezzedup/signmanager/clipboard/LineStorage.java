@@ -27,12 +27,9 @@ public class LineStorage
     {
         if (lines.size() > 4)
         {
-            this.lines = lines.subList(0, 4);
+            lines = lines.subList(0, 4);
         }
-        else
-        {
-            this.lines = lines;
-        }
+        this.lines = trim(lines);
     }
 
     public List<String> getLines()
@@ -55,7 +52,27 @@ public class LineStorage
 
         for (int i = 0; i <= line; i++)
         {
-            lines.add( (i != line) ? "" : value );
+            lines.add( (i != line) ? "" : trim(value) );
         }
+    }
+    
+    private String trim(String value)
+    {
+        if (value.length() >= 16)
+        {
+            return value.substring(0, 16);
+        }
+        return value;
+    }
+    
+    private List<String> trim(List<String> values)
+    {
+        List<String> list = new ArrayList<>();
+        
+        for (String value : values)
+        {
+            list.add(trim(value));
+        }
+        return list;
     }
 }

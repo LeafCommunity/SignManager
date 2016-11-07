@@ -8,9 +8,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.Plugin;
 
-public class ColorizeSigns implements Listener
+public class SignColorListener implements Listener
 {
-    public ColorizeSigns(Plugin plugin)
+    public SignColorListener(Plugin plugin)
     {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
