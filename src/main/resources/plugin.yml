@@ -1,7 +1,7 @@
-name: ${name}
-main: ${groupId}.${artifactId}.${name}
-version: ${version}
-author: ${author}
+name: ${project.name}
+main: community.leaf.signmanager.SignManager
+version: ${project.version}
+author: RezzedUp
 commands:
   sign:
     aliases: [signmanager, sm, signedit, se, editsign, managesign]
