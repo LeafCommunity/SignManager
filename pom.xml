@@ -108,16 +108,11 @@
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					<relocations>
 						<relocation>
-							<pattern>community.leaf.configvalues</pattern>
-							<shadedPattern>${shade.relocation}.community.leaf.configvalues</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>community.leaf.eventful</pattern>
-							<shadedPattern>${shade.relocation}.community.leaf.eventful</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>community.leaf.tasks</pattern>
-							<shadedPattern>${shade.relocation}.community.leaf.tasks</shadedPattern>
+							<pattern>community.leaf</pattern>
+							<shadedPattern>${shade.relocation}.community.leaf</shadedPattern>
+							<excludes>
+								<exclude>community.leaf.signmanager.*</exclude>
+							</excludes>
 						</relocation>
 						<relocation>
 							<pattern>com.github</pattern>
@@ -126,6 +121,10 @@
 						<relocation>
 							<pattern>com.rezzedup.util</pattern>
 							<shadedPattern>${shade.relocation}.com.rezzedup.util</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.bstats</pattern>
+							<shadedPattern>${shade.relocation}.org.bstats</shadedPattern>
 						</relocation>
 					</relocations>
 					<artifactSet>
