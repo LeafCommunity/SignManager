@@ -7,8 +7,40 @@
  */
 package community.leaf.signmanager;
 
+import com.github.zafarkhaja.semver.Version;
+import community.leaf.eventful.bukkit.BukkitEventSource;
+import community.leaf.signmanager.listeners.SignListener;
+import community.leaf.tasks.bukkit.BukkitTaskSource;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.tlinkowski.annotation.basic.NullOr;
 
-public class SignManagerPlugin extends JavaPlugin
+import java.nio.file.Path;
+
+public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, BukkitTaskSource
 {
+	private @NullOr Version version;
+	private @NullOr Path rootDirectory;
+	
+	@Override
+	public void onEnable()
+	{
+		this.version = Version.valueOf(plugin().getDescription().getVersion());
+		this.rootDirectory = getDataFolder().toPath();
+		
+		events().register(new SignListener(this));
+	}
+	
+	@Override
+	public Plugin plugin() { return this; }
+	
+	private <T> T initialized(@NullOr T thing)
+	{
+		if (thing != null) { return thing; }
+		throw new NullPointerException("Not initialized yet");
+	}
+	
+	public Version version() { return initialized(version); }
+	
+	public Path rootDirectory() { return initialized(rootDirectory); }
 }

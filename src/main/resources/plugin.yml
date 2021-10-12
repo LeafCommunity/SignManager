@@ -1,7 +1,10 @@
 name: ${project.name}
-main: community.leaf.signmanager.SignManager
+main: community.leaf.signmanager.SignManagerPlugin
 version: ${project.version}
+api-version: 1.13
+
 author: RezzedUp
+
 commands:
   sign:
     aliases: [signmanager, sm, signedit, se, editsign, managesign]
