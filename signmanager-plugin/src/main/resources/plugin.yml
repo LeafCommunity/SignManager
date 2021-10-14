@@ -1,4 +1,4 @@
-name: ${project.name}
+name: SignManager
 main: community.leaf.signmanager.SignManagerPlugin
 version: ${project.version}
 api-version: 1.13

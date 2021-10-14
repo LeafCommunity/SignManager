@@ -31,6 +31,7 @@ public class SignListener implements Listener
 		Signs.blockState(event.getClickedBlock()).ifPresent(sign ->
 		{
 			sign.setGlowingText(!sign.isGlowingText()); // :D
+			sign.update();
 		});
 	}
 }
