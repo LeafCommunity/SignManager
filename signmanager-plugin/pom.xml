@@ -12,13 +12,6 @@
 
 	<artifactId>signmanager-plugin</artifactId>
 
-	<repositories>
-		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<!-- Spigot API (via spigot-repo) -->
 		<dependency>
@@ -27,11 +20,23 @@
 			<version>${versions.minecraft}</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- PaperLib (via papermc) -->
+		<dependency>
+			<groupId>io.papermc</groupId>
+			<artifactId>paperlib</artifactId>
+			<version>1.0.6</version>
+			<scope>compile</scope>
+		 </dependency>
 		<!-- bStats (via maven-central) -->
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
 			<version>2.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>community.leaf.signmanager</groupId>
+			<artifactId>signmanager-common</artifactId>
+			<version>${revision}</version>
 		</dependency>
 	</dependencies>
 
@@ -45,6 +50,7 @@
 				<version>3.2.4</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
+					<minimizeJar>true</minimizeJar>
 					<relocations>
 						<relocation>
 							<pattern>community.leaf</pattern>
@@ -60,6 +66,10 @@
 						<relocation>
 							<pattern>com.rezzedup.util</pattern>
 							<shadedPattern>${shade.relocation}.com.rezzedup.util</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>io.papermc.lib</pattern>
+							<shadedPattern>${shade.relocation}.io.papermc.lib</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>org.bstats</pattern>

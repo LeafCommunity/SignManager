@@ -11,7 +11,7 @@ import community.leaf.eventful.bukkit.CancellationPolicy;
 import community.leaf.eventful.bukkit.annotations.CancelledEvents;
 import community.leaf.eventful.bukkit.annotations.EventListener;
 import community.leaf.signmanager.SignManagerPlugin;
-import community.leaf.signmanager.util.Signs;
+import community.leaf.signmanager.common.util.Signs;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 

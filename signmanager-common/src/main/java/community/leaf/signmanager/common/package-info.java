@@ -6,6 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 @NonNullPackage
-package community.leaf.signmanager.util;
+package community.leaf.signmanager.common;
 
 import pl.tlinkowski.annotation.basic.NonNullPackage;
