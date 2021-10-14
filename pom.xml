@@ -179,7 +179,6 @@
 								<exclude>examples/**</exclude>
 								<exclude>src/test/resources/**</exclude>
 								<exclude>src/main/resources/**</exclude>
-								<exclude>src/main/java/com/rezzedup/**</exclude> <!-- Legacy code: MIT -->
 							</excludes>
 						</licenseSet>
 					</licenseSets>
