@@ -12,10 +12,19 @@ import org.bukkit.block.Block;
 import pl.tlinkowski.annotation.basic.NullOr;
 
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 public class Signs
 {
 	private Signs() { throw new UnsupportedOperationException(); }
+	
+	public static int index(int index)
+	{
+		if (0 <= index && index < 4) { return index; }
+		throw new IndexOutOfBoundsException(index);
+	}
+	
+	public static IntStream indexRange() { return IntStream.range(0, 4); }
 	
 	public static Optional<org.bukkit.block.Sign> blockState(@NullOr Block block)
 	{

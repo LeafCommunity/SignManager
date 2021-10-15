@@ -7,7 +7,6 @@
  */
 package community.leaf.signmanager.common;
 
-import org.bukkit.Location;
 import org.bukkit.block.Sign;
 
 public interface Paste

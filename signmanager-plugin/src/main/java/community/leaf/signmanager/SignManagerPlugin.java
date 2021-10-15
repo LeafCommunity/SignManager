@@ -9,12 +9,10 @@ package community.leaf.signmanager;
 
 import com.github.zafarkhaja.semver.Version;
 import community.leaf.eventful.bukkit.BukkitEventSource;
-import community.leaf.signmanager.common.SignLine;
 import community.leaf.signmanager.listeners.SignListener;
 import community.leaf.tasks.bukkit.BukkitTaskSource;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
-import org.bukkit.block.Sign;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.tlinkowski.annotation.basic.NullOr;
@@ -23,9 +21,6 @@ import java.nio.file.Path;
 
 public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, BukkitTaskSource
 {
-	public static final SignLine.Content.Handler<String> LEGACY =
-		SignLine.Content.Handler.of(Sign::getLine, Sign::setLine);
-	
 	private @NullOr Version version;
 	private @NullOr Path rootDirectory;
 	
@@ -37,9 +32,16 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 		
 		Version bukkit = Version.valueOf(Bukkit.getBukkitVersion());
 		
+		CopyPasteHandler<?> copyPaste = new CopyPasteHandler<>(new LegacySignContentAdapter());
+		
 		if (PaperLib.isPaper() && bukkit.greaterThanOrEqualTo(Version.forIntegers(1,16,5)))
 		{
 			getLogger().info("Running on Paper: " + Bukkit.getVersion() + " -> " + Bukkit.getBukkitVersion());
+			// TODO: paper/adventure content adapter
+		}
+		else
+		{
+			// TODO: fallback to legacy
 		}
 		
 		events().register(new SignListener(this));

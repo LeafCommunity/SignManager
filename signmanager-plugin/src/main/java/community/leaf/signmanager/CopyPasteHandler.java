@@ -8,29 +8,24 @@
 package community.leaf.signmanager;
 
 import community.leaf.signmanager.common.Paste;
+import community.leaf.signmanager.common.SignContentAdapter;
 import community.leaf.signmanager.common.SignLine;
 import org.bukkit.block.Sign;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CopyPasteHandler<T>
 {
-	private final SignLine.Content.Handler<T> contentHandler;
+	private final SignContentAdapter<T> contentHandler;
 	
-	public CopyPasteHandler(SignLine.Content.Handler<T> contentHandler)
+	public CopyPasteHandler(SignContentAdapter<T> contentHandler)
 	{
 		this.contentHandler = contentHandler;
 	}
 	
 	public List<SignLine<T>> copy(Sign sign)
 	{
-		return Arrays.stream(SignLine.Index.values())
-			.map(index -> index.content(
-				contentHandler.getLineContent(sign, index.ordinal())
-			))
-			.collect(Collectors.toList());
+		return contentHandler.getLines(sign);
 	}
 	
 	public Paste paste(Sign sign, List<SignLine<T>> lines)
@@ -58,9 +53,7 @@ public class CopyPasteHandler<T>
 	
 	private void apply(Sign sign, List<SignLine<T>> lines)
 	{
-		lines.forEach(line ->
-			contentHandler.setLineContent(sign, line.index().ordinal(), line.content())
-		);
+		contentHandler.setLines(sign, lines);
 		sign.update();
 	}
 }
