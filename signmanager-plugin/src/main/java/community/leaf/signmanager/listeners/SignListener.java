@@ -12,8 +12,13 @@ import community.leaf.eventful.bukkit.annotations.CancelledEvents;
 import community.leaf.eventful.bukkit.annotations.EventListener;
 import community.leaf.signmanager.SignManagerPlugin;
 import community.leaf.signmanager.common.util.Signs;
+import org.bukkit.Tag;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import pl.tlinkowski.annotation.basic.NullOr;
 
 @CancelledEvents(CancellationPolicy.REJECT)
 public class SignListener implements Listener
@@ -28,6 +33,17 @@ public class SignListener implements Listener
 	@EventListener
 	public void onSignClick(PlayerInteractEvent event)
 	{
+		Player player = event.getPlayer();
+		
+		@NullOr EquipmentSlot hand = event.getHand();
+		if (hand == null) { return; }
+		
+		ItemStack tool = player.getInventory().getItem(hand);
+		if (!Tag.SIGNS.isTagged(tool.getType())) { return; }
+		
+		//tool.getItemMeta().getPersistentDataContainer().
+		//tool.getData().
+		
 		Signs.blockState(event.getClickedBlock()).ifPresent(sign ->
 		{
 			sign.setGlowingText(!sign.isGlowingText()); // :D

@@ -7,38 +7,20 @@
  */
 package community.leaf.signmanager.common;
 
-import community.leaf.signmanager.common.util.Signs;
-import pl.tlinkowski.annotation.basic.NullOr;
+import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.block.Sign;
 
-import java.util.Objects;
-
-public class SignLine<T>
+public interface SignLine extends SerializedSignLine
 {
-	private final int index;
-	private final T content;
+	@Override
+	int index();
 	
-	public SignLine(int index, T content)
-	{
-		this.index = Signs.index(index);
-		this.content = Objects.requireNonNull(content, "content");
-	}
+	void apply(Sign sign);
 	
-	public int index() { return index; }
-	
-	public T content() { return content; }
+	String asPlainText();
 	
 	@Override
-	public boolean equals(@NullOr Object o)
-	{
-		if (this == o) { return true; }
-		if (o == null || getClass() != o.getClass()) { return false; }
-		SignLine<?> signLine = (SignLine<?>) o;
-		return index == signLine.index && content.equals(signLine.content);
-	}
+	String asSerializedString();
 	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(index, content);
-	}
+	BaseComponent[] asPreview();
 }

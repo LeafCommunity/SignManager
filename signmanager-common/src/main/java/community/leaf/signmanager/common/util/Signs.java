@@ -18,9 +18,11 @@ public class Signs
 {
 	private Signs() { throw new UnsupportedOperationException(); }
 	
+	public static boolean isIndex(int index) { return 0 <= index && index < 4; }
+	
 	public static int index(int index)
 	{
-		if (0 <= index && index < 4) { return index; }
+		if (isIndex(index)) { return index; }
 		throw new IndexOutOfBoundsException(index);
 	}
 	

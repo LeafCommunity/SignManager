@@ -7,28 +7,53 @@
  */
 package community.leaf.signmanager.common;
 
-import com.rezzedup.util.valuables.Adapter;
 import community.leaf.signmanager.common.util.Signs;
 import org.bukkit.block.Sign;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public interface SignContentAdapter<T>
+public interface SignContentAdapter
 {
-	Adapter<String, T> contentAsString();
-	
-	SignLine<T> getLine(Sign sign, int index);
-	
-	default List<SignLine<T>> getLines(Sign sign)
+	static <T> SignContentAdapter of(String key, BiFunction<Sign, Integer, T> getter, BiFunction<Integer, T, SignLine> constructor)
 	{
-		return Signs.indexRange().mapToObj(index -> getLine(sign, index)).collect(Collectors.toList());
+		Objects.requireNonNull(key, "key");
+		Objects.requireNonNull(getter, "getter");
+		Objects.requireNonNull(constructor, "constructor");
+		
+		return new SignContentAdapter()
+		{
+			@Override
+			public String key() { return key; }
+			
+			@Override
+			public SignLine getLine(Sign sign, int index)
+			{
+				return constructor.apply(index, getter.apply(sign, index));
+			}
+		};
 	}
 	
-	void setLine(Sign sign, SignLine<T> line);
+	String key();
 	
-	default void setLines(Sign sign, List<SignLine<T>> lines)
+	SignLine getLine(Sign sign, int index);
+	
+	default List<SignLine> getSpecificLines(Sign sign, int ... indices)
 	{
-		lines.forEach(line -> setLine(sign, line));
+		return IntStream.of(indices)
+			.filter(Signs::isIndex)
+			.sorted()
+			.mapToObj(index -> getLine(sign, index))
+			.collect(Collectors.toList());
+	}
+	
+	default List<SignLine> getAllLines(Sign sign)
+	{
+		return Signs.indexRange()
+			.mapToObj(index -> getLine(sign, index))
+			.collect(Collectors.toList());
 	}
 }

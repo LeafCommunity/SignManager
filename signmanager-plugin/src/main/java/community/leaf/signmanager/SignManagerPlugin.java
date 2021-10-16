@@ -23,25 +23,24 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 {
 	private @NullOr Version version;
 	private @NullOr Path rootDirectory;
+	private @NullOr SignAdapterRegistry adapters;
 	
 	@Override
 	public void onEnable()
 	{
 		this.version = Version.valueOf(plugin().getDescription().getVersion());
 		this.rootDirectory = getDataFolder().toPath();
+		this.adapters = new SignAdapterRegistry();
+		
+		adapters.add(LegacySignLine.ADAPTER);
 		
 		Version bukkit = Version.valueOf(Bukkit.getBukkitVersion());
-		
-		CopyPasteHandler<?> copyPaste = new CopyPasteHandler<>(new LegacySignContentAdapter());
 		
 		if (PaperLib.isPaper() && bukkit.greaterThanOrEqualTo(Version.forIntegers(1,16,5)))
 		{
 			getLogger().info("Running on Paper: " + Bukkit.getVersion() + " -> " + Bukkit.getBukkitVersion());
 			// TODO: paper/adventure content adapter
-		}
-		else
-		{
-			// TODO: fallback to legacy
+			// adapters.add(AdventureSignLine.ADAPTER);
 		}
 		
 		events().register(new SignListener(this));
@@ -59,4 +58,6 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 	public Version version() { return initialized(version); }
 	
 	public Path rootDirectory() { return initialized(rootDirectory); }
+	
+	public SignAdapterRegistry adapters() { return initialized(adapters); }
 }
