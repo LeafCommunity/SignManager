@@ -8,6 +8,7 @@
 package community.leaf.signmanager.listeners;
 
 import community.leaf.eventful.bukkit.CancellationPolicy;
+import community.leaf.eventful.bukkit.ListenerOrder;
 import community.leaf.eventful.bukkit.annotations.CancelledEvents;
 import community.leaf.eventful.bukkit.annotations.EventListener;
 import community.leaf.signmanager.SignManagerPlugin;
@@ -16,13 +17,20 @@ import community.leaf.signmanager.common.SerializedCopiedSign;
 import community.leaf.signmanager.common.SignContentAdapter;
 import community.leaf.signmanager.common.SignLine;
 import community.leaf.signmanager.common.util.Signs;
+import org.bukkit.Color;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.Tag;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
@@ -37,6 +45,10 @@ import java.util.stream.Collectors;
 @CancelledEvents(CancellationPolicy.REJECT)
 public class SignListener implements Listener
 {
+	public static final Color AQUA = Color.fromRGB(0xa9f1fc);
+	
+	public static final Color MAGENTA = Color.fromRGB(0xfc94fa);
+	
 	private final SignManagerPlugin plugin;
 	
 	public SignListener(SignManagerPlugin plugin)
@@ -54,16 +66,17 @@ public class SignListener implements Listener
 		if (hand == null) { return; }
 		
 		Player player = event.getPlayer();
-		ItemStack tool = player.getInventory().getItem(hand);
+		ItemStack item = player.getInventory().getItem(hand);
 		
-		if (!Tag.SIGNS.isTagged(tool.getType())) { return; } // Only continue if holding a sign.
+		if (!Tag.SIGNS.isTagged(item.getType())) { return; } // Only continue if holding a sign.
 		if (player.isSneaking()) { return; } // Do nothing is sneaking.
 		
-		@NullOr ItemMeta meta = tool.getItemMeta();
+		@NullOr ItemMeta meta = item.getItemMeta();
 		if (meta == null) { return; }
 		
 		PersistentDataContainer data = meta.getPersistentDataContainer();
 		NamespacedKey key = new NamespacedKey(plugin, "clipboard");
+		Location centered = sign.getLocation().clone().add(0.5, 0.5, 0.5);
 		
 		// COPY
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK)
@@ -81,7 +94,9 @@ public class SignListener implements Listener
 			meta.setDisplayName("Punch to copy, click to paste!");
 			meta.setLore(copy.lines().stream().map(SignLine::asPlainText).collect(Collectors.toList()));
 			
-			tool.setItemMeta(meta);
+			item.setItemMeta(meta);
+			
+			particle(centered, MAGENTA);
 		}
 		// PASTE
 		else if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -95,6 +110,89 @@ public class SignListener implements Listener
 			
 			CopiedSign copy = CopiedSign.deserialize(plugin.adapters(), serialized);
 			copy.paste(sign); // TODO: store copy/paste history
+			
+			particle(centered, AQUA);
 		}
+	}
+	
+	@EventListener(ListenerOrder.FIRST)
+	public void onSignPlace(BlockPlaceEvent event)
+	{
+		class SignPlaceEvent extends BlockPlaceEvent
+		{
+			SignPlaceEvent()
+			{
+				super(
+					event.getBlockPlaced(),
+					event.getBlockReplacedState(),
+					event.getBlockAgainst(),
+					event.getItemInHand(),
+					event.getPlayer(),
+					event.canBuild(),
+					event.getHand()
+				);
+			}
+		}
+		
+		// We don't listen to our own event.
+		if (event instanceof SignPlaceEvent) { return; }
+		
+		Block block = event.getBlockPlaced();
+		if (!Tag.SIGNS.isTagged(block.getType())) { return; }
+		
+		Player player = event.getPlayer();
+		Location location = block.getLocation();
+		BlockData clonedBlockData = block.getBlockData().clone();
+		ItemStack item = event.getItemInHand();
+		
+		@NullOr ItemMeta meta = item.getItemMeta();
+		if (meta == null) { return; }
+		
+		PersistentDataContainer data = meta.getPersistentDataContainer();
+		NamespacedKey key = new NamespacedKey(plugin, "clipboard");
+		
+		if (!data.has(key, PersistentDataType.TAG_CONTAINER)) { return; }
+		
+		// Handle placing the sign manually (skip sign editor UI)
+		event.setCancelled(true);
+		
+		// Check if the player can actually place the sign...
+		SignPlaceEvent place = plugin.events().call(new SignPlaceEvent());
+		if (place.isCancelled() || !place.canBuild()) { return; }
+		
+		@NullOr SerializedCopiedSign serialized = data.get(key, SerializedCopiedSign.persistentDataType());
+		if (serialized == null) { return; }
+		
+		// Serialized data exists, subtract one clipboard from the player's inventory if they're not in creative.
+		if (player.getGameMode() != GameMode.CREATIVE) { item.setAmount(item.getAmount() - 1); }
+		
+		// Since there's a slight delay, play some particles!!
+		Location centered = location.clone().add(0.5, 0.5, 0.5);
+		particle(centered, AQUA);
+		
+		// Place it on the next tick.
+		plugin.sync().run(() ->
+		{
+			location.getBlock().setBlockData(clonedBlockData);
+			Signs.blockState(location.getBlock()).ifPresent(sign ->
+				CopiedSign.deserialize(plugin.adapters(), serialized).paste(sign)
+			);
+		});
+	}
+	
+	private void particle(Location location, Color color)
+	{
+		if (location.getWorld() == null) { return; }
+		
+		location.getWorld().spawnParticle(
+			Particle.REDSTONE,
+			location,
+			25,
+			0.25,
+			0.35,
+			0.25,
+			0.5,
+			new Particle.DustOptions(color, 0.5F)
+		);
 	}
 }
