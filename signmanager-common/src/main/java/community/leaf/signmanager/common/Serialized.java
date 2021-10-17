@@ -119,7 +119,8 @@ final class Serialized
 					return new CopiedSignImpl(
 						using,
 						Arrays.stream(lines)
-							.map(line -> SignLineImpl.TYPE.fromPrimitive(primitive, context))
+							.filter(Objects::nonNull)
+							.map(line -> SignLineImpl.TYPE.fromPrimitive(line, context))
 							.collect(Collectors.toList())
 					);
 				}

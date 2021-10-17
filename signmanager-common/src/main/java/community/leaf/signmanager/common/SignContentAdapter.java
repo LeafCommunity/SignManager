@@ -18,11 +18,17 @@ import java.util.stream.IntStream;
 
 public interface SignContentAdapter
 {
-	static <T> SignContentAdapter of(String key, BiFunction<Sign, Integer, T> getter, BiFunction<Integer, T, SignLine> constructor)
+	static <T> SignContentAdapter of(
+		String key,
+		BiFunction<Sign, Integer, T> getter,
+		BiFunction<Integer, T, SignLine> constructor,
+		BiFunction<Integer, String, SignLine> deserializer
+	)
 	{
 		Objects.requireNonNull(key, "key");
 		Objects.requireNonNull(getter, "getter");
 		Objects.requireNonNull(constructor, "constructor");
+		Objects.requireNonNull(deserializer, "deserializer");
 		
 		return new SignContentAdapter()
 		{
@@ -30,30 +36,38 @@ public interface SignContentAdapter
 			public String key() { return key; }
 			
 			@Override
-			public SignLine getLine(Sign sign, int index)
+			public SignLine line(Sign sign, int index)
 			{
 				return constructor.apply(index, getter.apply(sign, index));
+			}
+			
+			@Override
+			public SignLine deserializeLine(int index, String serialized)
+			{
+				return deserializer.apply(index, serialized);
 			}
 		};
 	}
 	
 	String key();
 	
-	SignLine getLine(Sign sign, int index);
+	SignLine line(Sign sign, int index);
 	
-	default List<SignLine> getSpecificLines(Sign sign, int ... indices)
+	SignLine deserializeLine(int index, String serialized);
+	
+	default List<SignLine> specificLines(Sign sign, int ... indices)
 	{
 		return IntStream.of(indices)
 			.filter(Signs::isIndex)
 			.sorted()
-			.mapToObj(index -> getLine(sign, index))
+			.mapToObj(index -> line(sign, index))
 			.collect(Collectors.toList());
 	}
 	
-	default List<SignLine> getAllLines(Sign sign)
+	default List<SignLine> allLines(Sign sign)
 	{
 		return Signs.indexRange()
-			.mapToObj(index -> getLine(sign, index))
+			.mapToObj(index -> line(sign, index))
 			.collect(Collectors.toList());
 	}
 }

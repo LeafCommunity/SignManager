@@ -9,6 +9,7 @@ package community.leaf.signmanager;
 
 import com.github.zafarkhaja.semver.Version;
 import community.leaf.eventful.bukkit.BukkitEventSource;
+import community.leaf.signmanager.common.SignContentAdapterRegistry;
 import community.leaf.signmanager.listeners.SignListener;
 import community.leaf.tasks.bukkit.BukkitTaskSource;
 import io.papermc.lib.PaperLib;
@@ -23,14 +24,14 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 {
 	private @NullOr Version version;
 	private @NullOr Path rootDirectory;
-	private @NullOr SignAdapterRegistry adapters;
+	private @NullOr SignContentAdapterRegistryImpl adapters;
 	
 	@Override
 	public void onEnable()
 	{
 		this.version = Version.valueOf(plugin().getDescription().getVersion());
 		this.rootDirectory = getDataFolder().toPath();
-		this.adapters = new SignAdapterRegistry();
+		this.adapters = new SignContentAdapterRegistryImpl();
 		
 		adapters.add(LegacySignLine.ADAPTER);
 		
@@ -59,5 +60,5 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 	
 	public Path rootDirectory() { return initialized(rootDirectory); }
 	
-	public SignAdapterRegistry adapters() { return initialized(adapters); }
+	public SignContentAdapterRegistry adapters() { return initialized(adapters); }
 }

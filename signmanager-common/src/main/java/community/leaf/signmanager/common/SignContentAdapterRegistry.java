@@ -5,16 +5,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package community.leaf.signmanager.common.util;
+package community.leaf.signmanager.common;
 
-import org.bukkit.NamespacedKey;
+import java.util.Optional;
 
-public class Keys
+public interface SignContentAdapterRegistry
 {
-	private Keys() { throw new UnsupportedOperationException(); }
+	SignContentAdapter defaultContentAdapter();
 	
-	public static NamespacedKey signManager(String key)
-	{
-		return new NamespacedKey("signmanager", key);
-	}
+	Optional<SignContentAdapter> contentAdapterByKey(String key);
 }

@@ -8,21 +8,22 @@
 package community.leaf.signmanager;
 
 import community.leaf.signmanager.common.SignContentAdapter;
+import community.leaf.signmanager.common.SignContentAdapterRegistry;
 import pl.tlinkowski.annotation.basic.NullOr;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class SignAdapterRegistry
+final class SignContentAdapterRegistryImpl implements SignContentAdapterRegistry
 {
 	private final Map<String, SignContentAdapter> contentAdaptersByKey = new HashMap<>();
 	
 	private @NullOr SignContentAdapter defaultContentAdapter = null;
 	
-	SignAdapterRegistry() {}
+	SignContentAdapterRegistryImpl() {}
 	
-	public void add(SignContentAdapter adapter)
+	void add(SignContentAdapter adapter)
 	{
 		contentAdaptersByKey.put(adapter.key(), adapter);
 		defaultContentAdapter = adapter;

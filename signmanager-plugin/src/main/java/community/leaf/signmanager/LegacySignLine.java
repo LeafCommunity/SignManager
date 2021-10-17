@@ -20,7 +20,7 @@ import java.util.Objects;
 public class LegacySignLine implements SignLine
 {
 	public static final SignContentAdapter ADAPTER =
-		SignContentAdapter.of("legacy", Sign::getLine, LegacySignLine::new);
+		SignContentAdapter.of("legacy", Sign::getLine, LegacySignLine::new, LegacySignLine::new);
 	
 	private final int index;
 	private final String content;
