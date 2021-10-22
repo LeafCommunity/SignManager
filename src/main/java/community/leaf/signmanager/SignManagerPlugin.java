@@ -9,7 +9,6 @@ package community.leaf.signmanager;
 
 import com.github.zafarkhaja.semver.Version;
 import community.leaf.eventful.bukkit.BukkitEventSource;
-import community.leaf.signmanager.common.SignContentAdapterRegistry;
 import community.leaf.signmanager.listeners.SignListener;
 import community.leaf.tasks.bukkit.BukkitTaskSource;
 import org.bukkit.Bukkit;

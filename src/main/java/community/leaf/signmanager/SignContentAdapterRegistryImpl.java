@@ -7,8 +7,6 @@
  */
 package community.leaf.signmanager;
 
-import community.leaf.signmanager.common.SignContentAdapter;
-import community.leaf.signmanager.common.SignContentAdapterRegistry;
 import pl.tlinkowski.annotation.basic.NullOr;
 
 import java.util.HashMap;
