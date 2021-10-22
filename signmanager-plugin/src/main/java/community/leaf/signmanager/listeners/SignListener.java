@@ -15,8 +15,10 @@ import community.leaf.signmanager.SignManagerPlugin;
 import community.leaf.signmanager.common.CopiedSign;
 import community.leaf.signmanager.common.SerializedCopiedSign;
 import community.leaf.signmanager.common.SignContentAdapter;
-import community.leaf.signmanager.common.SignLine;
 import community.leaf.signmanager.common.util.Signs;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -40,7 +42,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import pl.tlinkowski.annotation.basic.NullOr;
 
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @CancelledEvents(CancellationPolicy.REJECT)
 public class SignListener implements Listener
@@ -91,9 +94,25 @@ public class SignListener implements Listener
 			meta.addEnchant(Enchantment.DURABILITY, 1, true);
 			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			
-			meta.setDisplayName("Punch to copy, click to paste!");
-			meta.setLore(copy.lines().stream().map(SignLine::asPlainText).collect(Collectors.toList()));
+			List<String> lore = new ArrayList<>();
 			
+			lore.add("Punch to copy or click to paste:");
+			
+			// Preview lines
+			copy.lines().stream()
+				.map(line ->
+					new ComponentBuilder()
+						.append("→ #" + (line.index() + 1) + ": ")
+							.color(ChatColor.GRAY)
+						.append(line.asPreview())
+							.color(ChatColor.WHITE)
+						.create()
+				)
+				.map(TextComponent::toLegacyText)
+				.forEach(lore::add);
+				
+			meta.setDisplayName("Punch to copy, click to paste!");
+			meta.setLore(lore);
 			item.setItemMeta(meta);
 			
 			particle(centered, MAGENTA);
