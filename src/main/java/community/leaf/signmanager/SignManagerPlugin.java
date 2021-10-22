@@ -12,7 +12,6 @@ import community.leaf.eventful.bukkit.BukkitEventSource;
 import community.leaf.signmanager.common.SignContentAdapterRegistry;
 import community.leaf.signmanager.listeners.SignListener;
 import community.leaf.tasks.bukkit.BukkitTaskSource;
-import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,11 +35,6 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 		adapters.add(LegacySignLine.ADAPTER);
 		
 		Version bukkit = Version.valueOf(Bukkit.getBukkitVersion());
-		
-		if (PaperLib.isPaper() && bukkit.greaterThanOrEqualTo(Version.forIntegers(1,16,5)))
-		{
-			getLogger().info("Running on Paper: " + Bukkit.getVersion() + " -> " + Bukkit.getBukkitVersion());
-		}
 		
 		events().register(new SignListener(this));
 	}

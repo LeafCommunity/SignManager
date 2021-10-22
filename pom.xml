@@ -6,8 +6,7 @@
 
 	<groupId>community.leaf.signmanager</groupId>
 	<artifactId>signmanager-parent</artifactId>
-	<packaging>pom</packaging>
-	<version>${revision}</version> <!-- Change the version number in .mvn/maven.config -->
+	<version>3.0.0</version>
 
 	<name>SignManager</name>
 	<inceptionYear>2016</inceptionYear>
@@ -39,23 +38,20 @@
 		<url>https://github.com/LeafCommunity/SignManager/issues</url>
 	</issueManagement>
 
-	<modules>
-		<module>signmanager-plugin</module>
-	</modules>
-
 	<properties>
+		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<shade.relocation>community.leaf.signmanager.shaded</shade.relocation>
 
 		<!-- License headers -->
 		<license.header.year>${project.inceptionYear}-${maven.build.timestamp}</license.header.year>
 		<license.header.owner>RezzedUp</license.header.owner>
 		<license.header.url>https://github.com/LeafCommunity/SignManager</license.header.url>
 
-		<shade.relocation>community.leaf.signmanager.shaded</shade.relocation>
-
+		<!-- Versions -->
 		<versions.minecraft>1.17-R0.1-SNAPSHOT</versions.minecraft>
 	</properties>
 
@@ -65,16 +61,25 @@
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
-			<id>papermc</id>
-			<url>https://papermc.io/repo/repository/maven-public/</url>
-		</repository>
-		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
+		<!-- Spigot API (via spigot-repo) -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>${versions.minecraft}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- bStats (via maven-central) -->
+		<dependency>
+			<groupId>org.bstats</groupId>
+			<artifactId>bstats-bukkit</artifactId>
+			<version>2.2.1</version>
+		</dependency>
 		<!-- LeafCommunity ConfigValues (via jitpack.io) -->
 		<dependency>
 			<groupId>community.leaf.configvalues</groupId>
@@ -111,6 +116,7 @@
 
 	<build>
 		<defaultGoal>install</defaultGoal>
+		<finalName>${project.name}-${project.version}</finalName>
 		<plugins>
 			<!-- Compile project -->
 			<plugin>
@@ -125,35 +131,66 @@
 					</compilerArgs>
 				</configuration>
 			</plugin>
-			<!--
-            Flatten POM versioning so built JARs don't ship
-            with ${revision} properties as their version number.
-            -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.2.2</version>
-                <configuration>
-                    <updatePomFile>true</updatePomFile>
-                    <flattenMode>oss</flattenMode>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>flatten</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>flatten</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>flatten-clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+			<!-- Shade dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.4</version>
+				<configuration>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+					<minimizeJar>true</minimizeJar>
+					<relocations>
+						<relocation>
+							<pattern>community.leaf</pattern>
+							<shadedPattern>${shade.relocation}.community.leaf</shadedPattern>
+							<excludes>
+								<exclude>community.leaf.signmanager.*</exclude>
+							</excludes>
+						</relocation>
+						<relocation>
+							<pattern>com.github</pattern>
+							<shadedPattern>${shade.relocation}.com.github</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>com.rezzedup.util</pattern>
+							<shadedPattern>${shade.relocation}.com.rezzedup.util</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>io.papermc.lib</pattern>
+							<shadedPattern>${shade.relocation}.io.papermc.lib</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.bstats</pattern>
+							<shadedPattern>${shade.relocation}.org.bstats</shadedPattern>
+						</relocation>
+					</relocations>
+					<artifactSet>
+						<!-- Exclude annotations from built jar -->
+						<excludes>
+							<exclude>com.google.code.findbugs:jsr305</exclude>
+							<exclude>org.jetbrains.kotlin:kotlin-annotations-jvm</exclude>
+							<exclude>pl.tlinkowski.annotation:pl.tlinkowski.annotation.basic</exclude>
+						</excludes>
+					</artifactSet>
+					<filters>
+						<filter>
+							<!-- Exclude redundant metadata files -->
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/**</exclude>
+							</excludes>
+						</filter>
+					</filters>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- Add license headers -->
 			<!-- `mvn license:format` or run the `update-license-headers` configuration -->
 			<plugin>
