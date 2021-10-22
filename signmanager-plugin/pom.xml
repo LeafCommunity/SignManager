@@ -33,9 +33,16 @@
 			<artifactId>bstats-bukkit</artifactId>
 			<version>2.2.1</version>
 		</dependency>
+		<!-- SignManager Common (via local project) -->
 		<dependency>
 			<groupId>community.leaf.signmanager</groupId>
 			<artifactId>signmanager-common</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<!-- SignManager Paper Adventure (via local project) -->
+		<dependency>
+			<groupId>community.leaf.signmanager</groupId>
+			<artifactId>signmanager-paper-adventure</artifactId>
 			<version>${revision}</version>
 		</dependency>
 	</dependencies>

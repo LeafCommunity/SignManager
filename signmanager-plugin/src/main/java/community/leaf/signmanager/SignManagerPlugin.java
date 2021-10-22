@@ -11,6 +11,7 @@ import com.github.zafarkhaja.semver.Version;
 import community.leaf.eventful.bukkit.BukkitEventSource;
 import community.leaf.signmanager.common.SignContentAdapterRegistry;
 import community.leaf.signmanager.listeners.SignListener;
+import community.leaf.signmanager.paper.AdventureSignLine;
 import community.leaf.tasks.bukkit.BukkitTaskSource;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
@@ -40,8 +41,7 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 		if (PaperLib.isPaper() && bukkit.greaterThanOrEqualTo(Version.forIntegers(1,16,5)))
 		{
 			getLogger().info("Running on Paper: " + Bukkit.getVersion() + " -> " + Bukkit.getBukkitVersion());
-			// TODO: paper/adventure content adapter
-			// adapters.add(AdventureSignLine.ADAPTER);
+			adapters.add(AdventureSignLine.ADAPTER);
 		}
 		
 		events().register(new SignListener(this));

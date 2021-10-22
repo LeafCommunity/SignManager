@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>signmanager-parent</artifactId>
+		<groupId>community.leaf.signmanager</groupId>
+		<version>${revision}</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>signmanager-paper-adventure</artifactId>
+
+	<dependencies>
+		<!-- Paper API (via papermc) -->
+		<dependency>
+			<groupId>io.papermc.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>${versions.minecraft}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- SignManager Common (via local project) -->
+		<dependency>
+			<groupId>community.leaf.signmanager</groupId>
+			<artifactId>signmanager-common</artifactId>
+			<version>${revision}</version>
+		</dependency>
+	</dependencies>
+
+</project>
