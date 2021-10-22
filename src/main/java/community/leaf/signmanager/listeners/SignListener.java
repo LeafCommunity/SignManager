@@ -11,10 +11,9 @@ import community.leaf.eventful.bukkit.CancellationPolicy;
 import community.leaf.eventful.bukkit.ListenerOrder;
 import community.leaf.eventful.bukkit.annotations.CancelledEvents;
 import community.leaf.eventful.bukkit.annotations.EventListener;
+import community.leaf.signmanager.SignLine;
 import community.leaf.signmanager.SignManagerPlugin;
 import community.leaf.signmanager.CopiedSign;
-import community.leaf.signmanager.SerializedCopiedSign;
-import community.leaf.signmanager.SignContentAdapter;
 import community.leaf.signmanager.util.Signs;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -86,10 +85,9 @@ public class SignListener implements Listener
 		{
 			event.setCancelled(true); // Prevent breaking the sign.
 			
-			SignContentAdapter adapter = plugin.adapters().defaultContentAdapter();
-			CopiedSign copy = new CopiedSign(adapter, adapter.allLines(sign));
+			CopiedSign copy = new CopiedSign(SignLine.allLines(sign));
 			
-			data.set(key, SerializedCopiedSign.persistentDataType(), copy);
+			data.set(key, CopiedSign.TYPE, copy);
 			
 			meta.addEnchant(Enchantment.DURABILITY, 1, true);
 			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -104,7 +102,7 @@ public class SignListener implements Listener
 					new ComponentBuilder()
 						.append("→ #" + (line.index() + 1) + ": ")
 							.color(ChatColor.GRAY)
-						.append(line.asPreview())
+						.append(new TextComponent(line.toPreview()))
 							.color(ChatColor.WHITE)
 						.create()
 				)
@@ -124,11 +122,10 @@ public class SignListener implements Listener
 			
 			event.setCancelled(true); // Cancel interaction in case other plugins handle sign clicks.
 			
-			@NullOr SerializedCopiedSign serialized = data.get(key, SerializedCopiedSign.persistentDataType());
-			if (serialized == null) { return; }
+			@NullOr CopiedSign copy = data.get(key, CopiedSign.TYPE);
+			if (copy == null) { return; }
 			
-			CopiedSign copy = CopiedSign.deserialize(plugin.adapters(), serialized);
-			copy.paste(sign); // TODO: store copy/paste history
+			copy.paste(sign, player); // TODO: store copy/paste history
 			
 			particle(centered, AQUA);
 		}
@@ -179,8 +176,8 @@ public class SignListener implements Listener
 		SignPlaceEvent place = plugin.events().call(new SignPlaceEvent());
 		if (place.isCancelled() || !place.canBuild()) { return; }
 		
-		@NullOr SerializedCopiedSign serialized = data.get(key, SerializedCopiedSign.persistentDataType());
-		if (serialized == null) { return; }
+		@NullOr CopiedSign copy = data.get(key, CopiedSign.TYPE);
+		if (copy == null) { return; }
 		
 		// Serialized data exists, subtract one clipboard from the player's inventory if they're not in creative.
 		if (player.getGameMode() != GameMode.CREATIVE) { item.setAmount(item.getAmount() - 1); }
@@ -193,9 +190,7 @@ public class SignListener implements Listener
 		plugin.sync().run(() ->
 		{
 			location.getBlock().setBlockData(clonedBlockData);
-			Signs.blockState(location.getBlock()).ifPresent(sign ->
-				CopiedSign.deserialize(plugin.adapters(), serialized).paste(sign)
-			);
+			Signs.blockState(location.getBlock()).ifPresent(sign -> copy.paste(sign, player));
 		});
 	}
 	

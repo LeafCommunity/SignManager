@@ -22,16 +22,12 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 {
 	private @NullOr Version version;
 	private @NullOr Path rootDirectory;
-	private @NullOr SignContentAdapterRegistryImpl adapters;
 	
 	@Override
 	public void onEnable()
 	{
 		this.version = Version.valueOf(plugin().getDescription().getVersion());
 		this.rootDirectory = getDataFolder().toPath();
-		this.adapters = new SignContentAdapterRegistryImpl();
-		
-		adapters.add(LegacySignLine.ADAPTER);
 		
 		Version bukkit = Version.valueOf(Bukkit.getBukkitVersion());
 		
@@ -50,6 +46,4 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 	public Version version() { return initialized(version); }
 	
 	public Path rootDirectory() { return initialized(rootDirectory); }
-	
-	public SignContentAdapterRegistry adapters() { return initialized(adapters); }
 }

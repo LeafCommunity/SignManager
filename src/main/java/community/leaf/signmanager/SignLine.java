@@ -7,20 +7,119 @@
  */
 package community.leaf.signmanager;
 
+import community.leaf.signmanager.util.Keys;
+import community.leaf.signmanager.util.Persistable;
+import community.leaf.signmanager.util.Signs;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.block.Sign;
+import org.bukkit.persistence.PersistentDataAdapterContext;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import pl.tlinkowski.annotation.basic.NullOr;
 
-public interface SignLine extends SerializedSignLine
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+public class SignLine implements Persistable<PersistentDataContainer, SignLine>
 {
+	@SuppressWarnings("NullableProblems")
+	public static final PersistentDataType<PersistentDataContainer, SignLine> TYPE =
+		new PersistentDataType<>()
+		{
+			@Override
+			public Class<PersistentDataContainer> getPrimitiveType() { return PersistentDataContainer.class; }
+			
+			@Override
+			public Class<SignLine> getComplexType() { return SignLine.class; }
+			
+			@Override
+			public PersistentDataContainer toPrimitive(SignLine complex, PersistentDataAdapterContext context)
+			{
+				PersistentDataContainer data = context.newPersistentDataContainer();
+				
+				data.set(Keys.signManager("index"), PersistentDataType.BYTE, (byte) complex.index());
+				data.set(Keys.signManager("text"), PersistentDataType.STRING, complex.text());
+				
+				return data;
+			}
+			
+			@Override
+			public SignLine fromPrimitive(PersistentDataContainer primitive, PersistentDataAdapterContext context)
+			{
+				@NullOr Byte index = primitive.get(Keys.signManager("index"), PersistentDataType.BYTE);
+				if (index == null) { throw new NullPointerException("index"); }
+				
+				@NullOr String content = primitive.get(Keys.signManager("text"), PersistentDataType.STRING);
+				if (content == null) { throw new NullPointerException("text"); }
+				
+				return new SignLine(index.intValue(), content);
+			}
+		};
+	
+	public static SignLine line(Sign sign, int index)
+	{
+		return new SignLine(index, sign.getLine(index));
+	}
+	
+	public static List<SignLine> specificLines(Sign sign, int indices)
+	{
+		return IntStream.of(indices)
+			.filter(Signs::isIndex)
+			.sorted()
+			.mapToObj(index -> line(sign, index))
+			.collect(Collectors.toList());
+	}
+	
+	public static List<SignLine> allLines(Sign sign)
+	{
+		return Signs.indexRange()
+			.mapToObj(index -> line(sign, index))
+			.collect(Collectors.toList());
+	}
+	
+	private static final String BLANK = ChatColor.translateAlternateColorCodes('&', "&8&o(Blank)");
+	
+	private final int index;
+	private final String text;
+	
+	public SignLine(int index, String text)
+	{
+		this.index = Signs.index(index);
+		this.text = Objects.requireNonNull(text, "text");
+	}
+	
 	@Override
-	int index();
+	public PersistentDataType<PersistentDataContainer, SignLine> persistentDataType() { return TYPE; }
 	
-	void apply(Sign sign);
+	public int index() { return index; }
 	
-	String asPlainText();
+	public String text() { return text; }
+	
+	public void apply(Sign sign) { sign.setLine(index(), text); }
+	
+	public String toPlainText() { return ChatColor.stripColor(text); }
+	
+	public BaseComponent[] toPreview()
+	{
+		return TextComponent.fromLegacyText((text.isEmpty()) ? BLANK : text);
+	}
 	
 	@Override
-	String asSerializedString();
+	public boolean equals(@NullOr Object o)
+	{
+		if (this == o) { return true; }
+		if (o == null || getClass() != o.getClass()) { return false; }
+		SignLine signLine = (SignLine) o;
+		return index == signLine.index && text.equals(signLine.text);
+	}
 	
-	BaseComponent[] asPreview();
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(index, text);
+	}
 }
