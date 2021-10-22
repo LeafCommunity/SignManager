@@ -40,8 +40,6 @@
 	</issueManagement>
 
 	<modules>
-		<module>signmanager-common</module>
-		<module>signmanager-paper-adventure</module>
 		<module>signmanager-plugin</module>
 	</modules>
 
