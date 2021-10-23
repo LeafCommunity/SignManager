@@ -7,7 +7,9 @@
  */
 package community.leaf.signmanager;
 
+import community.leaf.signmanager.exceptions.SignPasteException;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
 
 public class PastedSign
 {
@@ -28,15 +30,15 @@ public class PastedSign
 	
 	public boolean isUndone() { return isUndone; }
 	
-	public void undo()
+	public void undo(Player player) throws SignPasteException
 	{
-		before.apply(sign);
+		before.paste(sign, player);
 		isUndone = true;
 	}
 	
-	public void redo()
+	public void redo(Player player) throws SignPasteException
 	{
-		after.apply(sign);
+		after.paste(sign, player);
 		isUndone = false;
 	}
 }

@@ -11,9 +11,9 @@ import community.leaf.eventful.bukkit.CancellationPolicy;
 import community.leaf.eventful.bukkit.ListenerOrder;
 import community.leaf.eventful.bukkit.annotations.CancelledEvents;
 import community.leaf.eventful.bukkit.annotations.EventListener;
-import community.leaf.signmanager.SignLine;
-import community.leaf.signmanager.SignManagerPlugin;
 import community.leaf.signmanager.CopiedSign;
+import community.leaf.signmanager.SignManagerPlugin;
+import community.leaf.signmanager.exceptions.SignPasteException;
 import community.leaf.signmanager.util.Signs;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -51,6 +51,8 @@ public class SignListener implements Listener
 	
 	public static final Color MAGENTA = Color.fromRGB(0xfc94fa);
 	
+	public static final Color RED = Color.fromRGB(0xf9502a);
+	
 	private final SignManagerPlugin plugin;
 	
 	public SignListener(SignManagerPlugin plugin)
@@ -85,8 +87,7 @@ public class SignListener implements Listener
 		{
 			event.setCancelled(true); // Prevent breaking the sign.
 			
-			CopiedSign copy = new CopiedSign(SignLine.allLines(sign));
-			
+			CopiedSign copy = new CopiedSign(sign);
 			data.set(key, CopiedSign.TYPE, copy);
 			
 			meta.addEnchant(Enchantment.DURABILITY, 1, true);
@@ -125,9 +126,15 @@ public class SignListener implements Listener
 			@NullOr CopiedSign copy = data.get(key, CopiedSign.TYPE);
 			if (copy == null) { return; }
 			
-			copy.paste(sign, player); // TODO: store copy/paste history
-			
-			particle(centered, AQUA);
+			try
+			{
+				copy.paste(sign, player); // TODO: store copy/paste history
+				particle(centered, AQUA);
+			}
+			catch (SignPasteException e)
+			{
+				particle(centered, RED);
+			}
 		}
 	}
 	
@@ -190,7 +197,11 @@ public class SignListener implements Listener
 		plugin.sync().run(() ->
 		{
 			location.getBlock().setBlockData(clonedBlockData);
-			Signs.blockState(location.getBlock()).ifPresent(sign -> copy.paste(sign, player));
+			
+			Signs.blockState(location.getBlock()).ifPresent(sign -> {
+				try { copy.paste(sign, player); }
+				catch (SignPasteException e) { particle(centered, RED); }
+			});
 		});
 	}
 	

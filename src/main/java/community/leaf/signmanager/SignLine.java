@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class SignLine implements Persistable<PersistentDataContainer, SignLine>
 {
@@ -60,25 +61,14 @@ public class SignLine implements Persistable<PersistentDataContainer, SignLine>
 			}
 		};
 	
-	public static SignLine line(Sign sign, int index)
+	public static Stream<SignLine> stream(String ... raw)
 	{
-		return new SignLine(index, sign.getLine(index));
+		return IntStream.range(0, raw.length).sorted().mapToObj(index -> new SignLine(index, raw[index]));
 	}
 	
-	public static List<SignLine> specificLines(Sign sign, int indices)
+	public static List<SignLine> list(String ... raw)
 	{
-		return IntStream.of(indices)
-			.filter(Signs::isIndex)
-			.sorted()
-			.mapToObj(index -> line(sign, index))
-			.collect(Collectors.toList());
-	}
-	
-	public static List<SignLine> allLines(Sign sign)
-	{
-		return Signs.indexRange()
-			.mapToObj(index -> line(sign, index))
-			.collect(Collectors.toList());
+		return stream(raw).collect(Collectors.toList());
 	}
 	
 	private static final String BLANK = ChatColor.translateAlternateColorCodes('&', "&8&o(Blank)");

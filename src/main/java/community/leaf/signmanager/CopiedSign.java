@@ -7,10 +7,14 @@
  */
 package community.leaf.signmanager;
 
+import community.leaf.eventful.bukkit.Events;
+import community.leaf.signmanager.events.SignPasteEvent;
+import community.leaf.signmanager.exceptions.SignPasteException;
 import community.leaf.signmanager.util.Keys;
 import community.leaf.signmanager.util.Persistable;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -73,22 +77,31 @@ public class CopiedSign implements Persistable<PersistentDataContainer, CopiedSi
 		this.lines = List.copyOf(lines);
 	}
 	
+	public CopiedSign(Sign sign)
+	{
+		this(SignLine.list(sign.getLines()));
+	}
+	
 	@Override
 	public PersistentDataType<PersistentDataContainer, CopiedSign> persistentDataType() { return TYPE; }
 	
 	public List<SignLine> lines() { return lines; }
 	
-	public PastedSign paste(Sign sign, Player player)
+	public PastedSign paste(Sign sign, Player player) throws SignPasteException
 	{
-		CopiedSign snapshot = new CopiedSign(SignLine.allLines(sign));
-		//todo: Events.dispatcher().call(new SignChangeEvent())
-		apply(sign);
-		return new PastedSign(sign, snapshot, this);
-	}
-	
-	protected void apply(Sign sign)
-	{
-		lines().forEach(line -> line.apply(sign));
+		CopiedSign snapshot = new CopiedSign(sign);
+		
+		String[] raw = sign.getLines();
+		lines().forEach(line -> raw[line.index()] = line.text());
+		
+		SignChangeEvent event = Events.dispatcher().call(new SignPasteEvent(sign, player, raw));
+		if (event.isCancelled()) { throw new SignPasteException(this, sign, player); }
+		
+		CopiedSign result = new CopiedSign(SignLine.list(event.getLines()));
+		
+		result.lines().forEach(line -> sign.setLine(line.index(), line.text()));
 		sign.update();
+		
+		return new PastedSign(sign, snapshot, result);
 	}
 }
