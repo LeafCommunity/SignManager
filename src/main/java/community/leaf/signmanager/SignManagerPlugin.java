@@ -9,11 +9,12 @@ package community.leaf.signmanager;
 
 import com.github.zafarkhaja.semver.Version;
 import community.leaf.eventful.bukkit.BukkitEventSource;
+import community.leaf.signmanager.holograms.EntityHologramSource;
 import community.leaf.signmanager.holograms.HologramSource;
 import community.leaf.signmanager.holograms.ProtocolLibHologramSource;
 import community.leaf.signmanager.listeners.SignListener;
+import community.leaf.signmanager.util.MinecraftVersions;
 import community.leaf.tasks.bukkit.BukkitTaskSource;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.tlinkowski.annotation.basic.NullOr;
@@ -23,7 +24,6 @@ import java.nio.file.Path;
 public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, BukkitTaskSource
 {
 	private @NullOr Version version;
-	private @NullOr Version serverVersion;
 	private @NullOr Path rootDirectory;
 	private @NullOr HologramSource holograms;
 	
@@ -31,22 +31,21 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 	public void onEnable()
 	{
 		this.version = Version.valueOf(plugin().getDescription().getVersion());
-		this.serverVersion = Version.valueOf(Bukkit.getBukkitVersion());
-		
-		getLogger().info("Loading on Minecraft version: " + serverVersion);
-		
 		this.rootDirectory = getDataFolder().toPath();
+		
+		getLogger().info("Minecraft version: " + MinecraftVersions.SERVER);
 		
 		events().register(new SignListener(this));
 		
 		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib"))
 		{
-			getLogger().info("Using ProtocolLib holograms.");
+			getLogger().info("Using packet-based holograms (via ProtocolLib).");
 			holograms = new ProtocolLibHologramSource(this);
 		}
 		else
 		{
-			holograms = null; // TODO. . . .
+			getLogger().info("Using entity-based holograms.");
+			holograms = new EntityHologramSource();
 		}
 	}
 	
@@ -60,8 +59,6 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 	}
 	
 	public Version version() { return initialized(version); }
-	
-	public Version serverVersion() { return initialized(serverVersion); }
 	
 	public Path rootDirectory() { return initialized(rootDirectory); }
 	

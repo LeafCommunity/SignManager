@@ -8,6 +8,10 @@
 package community.leaf.signmanager.util;
 
 import com.github.zafarkhaja.semver.Version;
+import org.bukkit.Bukkit;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MinecraftVersions
 {
@@ -18,4 +22,13 @@ public class MinecraftVersions
 	public static final Version V1_17_0 = Version.forIntegers(1, 17);
 	
 	public static final Version V1_17_1 = Version.forIntegers(1, 17, 1);
+	
+	public static final Version SERVER;
+	
+	static
+	{
+		Matcher matcher = Pattern.compile("\\d+\\.\\d+(\\.\\d+)?").matcher(Bukkit.getBukkitVersion());
+		if (!matcher.find()) { throw new IllegalStateException("Invalid Bukkit version: " + Bukkit.getBukkitVersion()); }
+		SERVER = Version.valueOf(matcher.group());
+	}
 }

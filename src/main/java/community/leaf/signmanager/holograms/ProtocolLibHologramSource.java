@@ -57,8 +57,7 @@ public class ProtocolLibHologramSource implements HologramSource
 	@Override
 	public Hologram showHologram(Player viewer, Location location, BaseComponent[] text)
 	{
-		// Height: 1.975 blocks
-		Location feet = location.clone().subtract(0, 1.975, 0);
+		Location base = Hologram.baseOffsetFromTopLocation(location);
 		int entityId = ThreadLocalRandom.current().nextInt(MIN_ID, Integer.MAX_VALUE);
 		
 		// Packet #1: spawn the fake armor stand
@@ -71,9 +70,9 @@ public class ProtocolLibHologramSource implements HologramSource
 		// https://wiki.vg/Entity_metadata#Mobs
 		spawn.getIntegers().write(1, 1); // ArmorStand ID: 1
 		
-		spawn.getDoubles().write(0, feet.getX());
-		spawn.getDoubles().write(1, feet.getY());
-		spawn.getDoubles().write(2, feet.getZ());
+		spawn.getDoubles().write(0, base.getX());
+		spawn.getDoubles().write(1, base.getY());
+		spawn.getDoubles().write(2, base.getZ());
 		
 		sendPacket(viewer, spawn);
 		
@@ -104,7 +103,7 @@ public class ProtocolLibHologramSource implements HologramSource
 		
 		sendPacket(viewer, metadata);
 	
-		return new LocalHologram(viewer, feet, entityId);
+		return new LocalHologram(viewer, base, entityId);
 	}
 	
 	class LocalHologram implements Hologram
@@ -141,11 +140,11 @@ public class ProtocolLibHologramSource implements HologramSource
 			// https://wiki.vg/Protocol#Destroy_Entities
 			PacketContainer destroy = protocol.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 			
-			if (plugin.serverVersion().lessThan(MinecraftVersions.V1_17_0))
+			if (MinecraftVersions.SERVER.lessThan(MinecraftVersions.V1_17_0))
 			{
 				destroy.getIntegerArrays().write(0, new int[] { entityId });
 			}
-			else if (plugin.serverVersion().equals(MinecraftVersions.V1_17_0))
+			else if (MinecraftVersions.SERVER.lessThan(MinecraftVersions.V1_17_1))
 			{
 				destroy.getIntegers().write(0, entityId);
 			}

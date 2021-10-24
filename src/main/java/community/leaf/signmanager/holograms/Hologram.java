@@ -12,6 +12,12 @@ import org.bukkit.entity.Player;
 
 public interface Hologram
 {
+	static Location baseOffsetFromTopLocation(Location top)
+	{
+		// Height: 1.975 blocks
+		return top.clone().subtract(0, 1.975, 0);
+	}
+	
 	boolean isLocal();
 	
 	Player viewer();
