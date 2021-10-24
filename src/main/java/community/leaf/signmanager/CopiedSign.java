@@ -104,4 +104,19 @@ public class CopiedSign implements Persistable<PersistentDataContainer, CopiedSi
 		
 		return new PastedSign(sign, snapshot, result);
 	}
+	
+	@Override
+	public boolean equals(@NullOr Object o)
+	{
+		if (this == o) { return true; }
+		if (o == null || getClass() != o.getClass()) { return false; }
+		CopiedSign that = (CopiedSign) o;
+		return lines.equals(that.lines);
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(lines);
+	}
 }

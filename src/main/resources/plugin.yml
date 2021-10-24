@@ -2,6 +2,7 @@ name: ${project.name}
 main: community.leaf.signmanager.SignManagerPlugin
 version: ${project.version}
 api-version: 1.13
+softdepend: [ProtocolLib]
 
 author: RezzedUp
 

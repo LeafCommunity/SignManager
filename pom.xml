@@ -74,6 +74,13 @@
 			<version>${versions.minecraft}</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- ProtocolLib (via jitpack.io) -->
+		<dependency>
+			<groupId>com.github.dmulloy2</groupId>
+			<artifactId>protocollib</artifactId>
+			<version>4.7.0</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- bStats (via maven-central) -->
 		<dependency>
 			<groupId>org.bstats</groupId>

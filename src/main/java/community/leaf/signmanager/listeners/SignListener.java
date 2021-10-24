@@ -41,6 +41,8 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import pl.tlinkowski.annotation.basic.NullOr;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,6 +117,7 @@ public class SignListener implements Listener
 			item.setItemMeta(meta);
 			
 			particle(centered, MAGENTA);
+			hologram(centered, player, "&o&lCopied!");
 		}
 		// PASTE
 		else if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -130,10 +133,13 @@ public class SignListener implements Listener
 			{
 				copy.paste(sign, player); // TODO: store copy/paste history
 				particle(centered, AQUA);
+				hologram(centered, player, "&o&lPasted!");
+				
 			}
 			catch (SignPasteException e)
 			{
 				particle(centered, RED);
+				hologram(centered, player, "&o&lCould not paste...");
 			}
 		}
 	}
@@ -199,8 +205,16 @@ public class SignListener implements Listener
 			location.getBlock().setBlockData(clonedBlockData);
 			
 			Signs.blockState(location.getBlock()).ifPresent(sign -> {
-				try { copy.paste(sign, player); }
-				catch (SignPasteException e) { particle(centered, RED); }
+				try
+				{
+					copy.paste(sign, player);
+					hologram(centered, player, "&o&lPasted!");
+				}
+				catch (SignPasteException e)
+				{
+					particle(centered, RED);
+					hologram(centered, player, "&o&lCould not paste...");
+				}
 			});
 		});
 	}
@@ -218,6 +232,18 @@ public class SignListener implements Listener
 			0.25,
 			0.5,
 			new Particle.DustOptions(color, 0.5F)
+		);
+	}
+	
+	private void hologram(Location location, Player player, String text)
+	{
+		plugin.holograms().ifPresent(holograms ->
+			holograms.showHologram(
+				location,
+				player,
+				Duration.of(1, ChronoUnit.SECONDS),
+				TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', text))
+			)
 		);
 	}
 }

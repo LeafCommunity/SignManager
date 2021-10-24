@@ -17,11 +17,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import pl.tlinkowski.annotation.basic.NullOr;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, BukkitTaskSource
 {
 	private @NullOr Version version;
 	private @NullOr Path rootDirectory;
+	private @NullOr HologramDisplay holograms;
 	
 	@Override
 	public void onEnable()
@@ -32,6 +34,12 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 		Version bukkit = Version.valueOf(Bukkit.getBukkitVersion());
 		
 		events().register(new SignListener(this));
+		
+		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib"))
+		{
+			getLogger().info("Using ProtocolLib holograms.");
+			holograms = new HologramDisplay.ProtocolLibHologram(this);
+		}
 	}
 	
 	@Override
@@ -46,4 +54,6 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 	public Version version() { return initialized(version); }
 	
 	public Path rootDirectory() { return initialized(rootDirectory); }
+	
+	public Optional<HologramDisplay> holograms() { return Optional.ofNullable(holograms); }
 }
