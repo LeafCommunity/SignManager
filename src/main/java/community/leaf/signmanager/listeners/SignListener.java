@@ -14,8 +14,10 @@ import community.leaf.eventful.bukkit.annotations.EventListener;
 import community.leaf.signmanager.CopiedSign;
 import community.leaf.signmanager.SignManagerPlugin;
 import community.leaf.signmanager.exceptions.SignPasteException;
+import community.leaf.signmanager.holograms.Hologram;
 import community.leaf.signmanager.util.Signs;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Color;
@@ -41,8 +43,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import pl.tlinkowski.annotation.basic.NullOr;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,7 +117,7 @@ public class SignListener implements Listener
 			item.setItemMeta(meta);
 			
 			particle(centered, MAGENTA);
-			hologram(centered, player, "&o&lCopied!");
+			hologram(player, centered, "&o&lCopied!");
 		}
 		// PASTE
 		else if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -133,13 +133,13 @@ public class SignListener implements Listener
 			{
 				copy.paste(sign, player); // TODO: store copy/paste history
 				particle(centered, AQUA);
-				hologram(centered, player, "&o&lPasted!");
+				hologram(player, centered, "&o&lPasted!");
 				
 			}
 			catch (SignPasteException e)
 			{
 				particle(centered, RED);
-				hologram(centered, player, "&o&lCould not paste...");
+				hologram(player, centered, "&o&lCould not paste...");
 			}
 		}
 	}
@@ -208,12 +208,12 @@ public class SignListener implements Listener
 				try
 				{
 					copy.paste(sign, player);
-					hologram(centered, player, "&o&lPasted!");
+					hologram(player, centered, "&o&lPasted!");
 				}
 				catch (SignPasteException e)
 				{
 					particle(centered, RED);
-					hologram(centered, player, "&o&lCould not paste...");
+					hologram(player, centered, "&o&lCould not paste...");
 				}
 			});
 		});
@@ -235,15 +235,10 @@ public class SignListener implements Listener
 		);
 	}
 	
-	private void hologram(Location location, Player player, String text)
+	private void hologram(Player player, Location location, String text)
 	{
-		plugin.holograms().ifPresent(holograms ->
-			holograms.showHologram(
-				location,
-				player,
-				Duration.of(1, ChronoUnit.SECONDS),
-				TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', text))
-			)
-		);
+		BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', text));
+		Hologram hologram = plugin.holograms().showHologram(player, location, components);
+		plugin.sync().delay(1).seconds().run(hologram::destroy);
 	}
 }

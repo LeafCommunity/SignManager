@@ -9,6 +9,8 @@ package community.leaf.signmanager;
 
 import com.github.zafarkhaja.semver.Version;
 import community.leaf.eventful.bukkit.BukkitEventSource;
+import community.leaf.signmanager.holograms.HologramSource;
+import community.leaf.signmanager.holograms.ProtocolLibHologramSource;
 import community.leaf.signmanager.listeners.SignListener;
 import community.leaf.tasks.bukkit.BukkitTaskSource;
 import org.bukkit.Bukkit;
@@ -17,28 +19,34 @@ import org.bukkit.plugin.java.JavaPlugin;
 import pl.tlinkowski.annotation.basic.NullOr;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, BukkitTaskSource
 {
 	private @NullOr Version version;
+	private @NullOr Version serverVersion;
 	private @NullOr Path rootDirectory;
-	private @NullOr HologramDisplay holograms;
+	private @NullOr HologramSource holograms;
 	
 	@Override
 	public void onEnable()
 	{
 		this.version = Version.valueOf(plugin().getDescription().getVersion());
-		this.rootDirectory = getDataFolder().toPath();
+		this.serverVersion = Version.valueOf(Bukkit.getBukkitVersion());
 		
-		Version bukkit = Version.valueOf(Bukkit.getBukkitVersion());
+		getLogger().info("Loading on Minecraft version: " + serverVersion);
+		
+		this.rootDirectory = getDataFolder().toPath();
 		
 		events().register(new SignListener(this));
 		
 		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib"))
 		{
 			getLogger().info("Using ProtocolLib holograms.");
-			holograms = new HologramDisplay.ProtocolLibHologram(this);
+			holograms = new ProtocolLibHologramSource(this);
+		}
+		else
+		{
+			holograms = null; // TODO. . . .
 		}
 	}
 	
@@ -53,7 +61,9 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 	
 	public Version version() { return initialized(version); }
 	
+	public Version serverVersion() { return initialized(serverVersion); }
+	
 	public Path rootDirectory() { return initialized(rootDirectory); }
 	
-	public Optional<HologramDisplay> holograms() { return Optional.ofNullable(holograms); }
+	public HologramSource holograms() { return initialized(holograms); }
 }
