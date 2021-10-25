@@ -63,4 +63,11 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 	public Path rootDirectory() { return initialized(rootDirectory); }
 	
 	public HologramSource holograms() { return initialized(holograms); }
+	
+	public void fallbackToEntityHolograms()
+	{
+		if (holograms instanceof EntityHologramSource) { return; }
+		getLogger().info("Reverting to entity-based holograms.");
+		holograms = new EntityHologramSource();
+	}
 }

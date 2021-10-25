@@ -13,6 +13,8 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject;
 import community.leaf.signmanager.SignManagerPlugin;
 import community.leaf.signmanager.util.MinecraftVersions;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -25,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class ProtocolLibHologramSource implements HologramSource
@@ -40,19 +44,38 @@ public class ProtocolLibHologramSource implements HologramSource
 		this.protocol = ProtocolLibrary.getProtocolManager();
 	}
 	
-	private void logPacketException(PacketType type, Throwable e)
-	{
-		plugin.getLogger().log(Level.WARNING, "Could not send packet: " + type, e);
-	}
-	
-	private void sendPacket(Player viewer, PacketContainer packet)
-	{
-		try { protocol.sendServerPacket(viewer, packet); }
-		catch (InvocationTargetException e) { logPacketException(packet.getType(), e); }
-	}
-	
 	@Override
 	public boolean supportsLocalHolograms() { return true; }
+	
+	private boolean sendPacket(Player player, PacketType type, Consumer<PacketContainer> packer)
+	{
+		PacketContainer packet = protocol.createPacket(type);
+		boolean success = false;
+		
+		try
+		{
+			packer.accept(packet);
+			protocol.sendServerPacket(player, packet);
+			success = true;
+		}
+		catch (InvocationTargetException e)
+		{
+			plugin.getLogger().log(Level.WARNING, "Could not send packet: " + type, e);
+		}
+		catch (RuntimeException e)
+		{
+			plugin.getLogger().log(Level.WARNING, "Could not create packet: " + type, e);
+		}
+		finally
+		{
+			// Something went wrong with packets, revert to entities.
+			if (!success) { plugin.fallbackToEntityHolograms(); }
+		}
+		
+		return success;
+	}
+	
+	private static <T> T resolve(Supplier<T> supplier) { return supplier.get(); }
 	
 	@Override
 	public Hologram showHologram(Player viewer, Location location, BaseComponent[] text)
@@ -62,47 +85,48 @@ public class ProtocolLibHologramSource implements HologramSource
 		
 		// Packet #1: spawn the fake armor stand
 		// https://wiki.vg/Protocol#Spawn_Living_Entity
-		PacketContainer spawn = protocol.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
-		
-		spawn.getIntegers().write(0, entityId);
-		spawn.getUUIDs().write(0, UUID.randomUUID());
-		
-		// https://wiki.vg/Entity_metadata#Mobs
-		spawn.getIntegers().write(1, 1); // ArmorStand ID: 1
-		
-		spawn.getDoubles().write(0, base.getX());
-		spawn.getDoubles().write(1, base.getY());
-		spawn.getDoubles().write(2, base.getZ());
-		
-		sendPacket(viewer, spawn);
+		sendPacket(viewer, PacketType.Play.Server.SPAWN_ENTITY_LIVING, spawn ->
+		{
+			spawn.getIntegers().write(0, entityId);
+			spawn.getUUIDs().write(0, UUID.randomUUID());
+			
+			// https://wiki.vg/Entity_metadata#Mobs
+			spawn.getIntegers().write(1, 1); // ArmorStand ID: 1
+			
+			spawn.getDoubles().write(0, base.getX());
+			spawn.getDoubles().write(1, base.getY());
+			spawn.getDoubles().write(2, base.getZ());
+		});
 		
 		// Packet #2: send fake armor stand metadata
 		// https://wiki.vg/Protocol#Entity_Metadata
-		PacketContainer metadata = protocol.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-		metadata.getIntegers().write(0, entityId);
+		sendPacket(viewer, PacketType.Play.Server.ENTITY_METADATA, metadata ->
+		{
+			metadata.getIntegers().write(0, entityId);
+			metadata.getWatchableCollectionModifier().write(0, resolve(() ->
+			{
+				WrappedDataWatcher watcher = new WrappedDataWatcher();
+			
+				// https://wiki.vg/Entity_metadata#Entity
+				// Bit mask 0x20 = invisible
+				watcher.setObject(new WrappedDataWatcherObject(0, Registry.get(Byte.class)), (byte) 0x20);
+				
+				// Custom name
+				watcher.setObject(
+					new WrappedDataWatcherObject(2, Registry.getChatComponentSerializer(true)),
+					Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(text)).getHandle())
+				);
+				
+				// Make custom name visible
+				watcher.setObject(new WrappedDataWatcherObject(3, Registry.get(Boolean.class)), true);
+				
+				// No gravity
+				watcher.setObject(new WrappedDataWatcherObject(5, Registry.get(Boolean.class)), true);
+				
+				return watcher.getWatchableObjects();
+			}));
+		});
 		
-		WrappedDataWatcher watcher = new WrappedDataWatcher();
-		
-		// https://wiki.vg/Entity_metadata#Entity
-		// Bit mask 0x20 = invisible
-		watcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte.class)), (byte) 0x20);
-		
-		// Custom name
-		watcher.setObject(
-			new WrappedDataWatcher.WrappedDataWatcherObject(2, WrappedDataWatcher.Registry.getChatComponentSerializer(true)),
-			Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(text)).getHandle())
-		);
-		
-		// Make custom name visible
-		watcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(3, WrappedDataWatcher.Registry.get(Boolean.class)), true);
-		
-		// No gravity
-		watcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(5, WrappedDataWatcher.Registry.get(Boolean.class)), true);
-		
-		metadata.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
-		
-		sendPacket(viewer, metadata);
-	
 		return new LocalHologram(viewer, base, entityId);
 	}
 	
@@ -138,30 +162,21 @@ public class ProtocolLibHologramSource implements HologramSource
 		{
 			// Packet #3: destroy hologram
 			// https://wiki.vg/Protocol#Destroy_Entities
-			PacketContainer destroy = protocol.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-			
-			if (MinecraftVersions.SERVER.lessThan(MinecraftVersions.V1_17_0))
+			isDestroyed = sendPacket(viewer, PacketType.Play.Server.ENTITY_DESTROY, destroy ->
 			{
-				destroy.getIntegerArrays().write(0, new int[] { entityId });
-			}
-			else if (MinecraftVersions.SERVER.lessThan(MinecraftVersions.V1_17_1))
-			{
-				destroy.getIntegers().write(0, entityId);
-			}
-			else // > 1.17.0
-			{
-				destroy.getIntLists().write(0, List.of(entityId));
-			}
-			
-			try
-			{
-				protocol.sendServerPacket(viewer, destroy);
-				isDestroyed = true;
-			}
-			catch (InvocationTargetException e)
-			{
-				logPacketException(destroy.getType(), e);
-			}
+				if (MinecraftVersions.SERVER.lessThan(MinecraftVersions.V1_17_0))
+				{
+					destroy.getIntegerArrays().write(0, new int[] { entityId });
+				}
+				else if (MinecraftVersions.SERVER.lessThan(MinecraftVersions.V1_17_1))
+				{
+					destroy.getIntegers().write(0, entityId);
+				}
+				else // >= 1.17.1
+				{
+					destroy.getIntLists().write(0, List.of(entityId));
+				}
+			});
 		}
 	}
 }
