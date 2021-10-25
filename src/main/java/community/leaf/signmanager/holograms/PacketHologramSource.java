@@ -31,14 +31,14 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
-public class ProtocolLibHologramSource implements HologramSource
+public class PacketHologramSource implements HologramSource
 {
 	private static final int MIN_ID = Integer.MAX_VALUE / 2;
 	
 	private final SignManagerPlugin plugin;
 	private final ProtocolManager protocol;
 	
-	public ProtocolLibHologramSource(SignManagerPlugin plugin)
+	public PacketHologramSource(SignManagerPlugin plugin)
 	{
 		this.plugin = plugin;
 		this.protocol = ProtocolLibrary.getProtocolManager();
@@ -127,10 +127,10 @@ public class ProtocolLibHologramSource implements HologramSource
 			}));
 		});
 		
-		return new LocalHologram(viewer, base, entityId);
+		return new PacketHologram(viewer, base, entityId);
 	}
 	
-	class LocalHologram implements Hologram
+	class PacketHologram implements Hologram
 	{
 		private final Player viewer;
 		private final Location location;
@@ -138,7 +138,7 @@ public class ProtocolLibHologramSource implements HologramSource
 		
 		private boolean isDestroyed = false;
 		
-		LocalHologram(Player viewer, Location location, int entityId)
+		PacketHologram(Player viewer, Location location, int entityId)
 		{
 			this.viewer = viewer;
 			this.location = location;

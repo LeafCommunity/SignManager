@@ -11,7 +11,7 @@ import com.github.zafarkhaja.semver.Version;
 import community.leaf.eventful.bukkit.BukkitEventSource;
 import community.leaf.signmanager.holograms.EntityHologramSource;
 import community.leaf.signmanager.holograms.HologramSource;
-import community.leaf.signmanager.holograms.ProtocolLibHologramSource;
+import community.leaf.signmanager.holograms.PacketHologramSource;
 import community.leaf.signmanager.listeners.SignListener;
 import community.leaf.signmanager.util.MinecraftVersions;
 import community.leaf.tasks.bukkit.BukkitTaskSource;
@@ -40,7 +40,7 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib"))
 		{
 			getLogger().info("Using packet-based holograms (via ProtocolLib).");
-			holograms = new ProtocolLibHologramSource(this);
+			holograms = new PacketHologramSource(this);
 		}
 		else
 		{
