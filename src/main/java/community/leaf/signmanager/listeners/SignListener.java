@@ -23,6 +23,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Tag;
@@ -41,6 +42,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Vector;
 import pl.tlinkowski.annotation.basic.NullOr;
 
 import java.util.ArrayList;
@@ -75,7 +77,7 @@ public class SignListener implements Listener
 		ItemStack item = player.getInventory().getItem(hand);
 		
 		if (!Tag.SIGNS.isTagged(item.getType())) { return; } // Only continue if holding a sign.
-		if (player.isSneaking()) { return; } // Do nothing is sneaking.
+		if (player.isSneaking()) { return; } // Do nothing if sneaking.
 		
 		@NullOr ItemMeta meta = item.getItemMeta();
 		if (meta == null) { return; }
@@ -116,8 +118,8 @@ public class SignListener implements Listener
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			
-			particle(centered, MAGENTA);
-			hologram(player, centered, "&o&lCopied!");
+			particle(player, centered, MAGENTA);
+			hologram(player, centered, sign.getType(), "&o&lCopied!");
 		}
 		// PASTE
 		else if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -132,14 +134,14 @@ public class SignListener implements Listener
 			try
 			{
 				copy.paste(sign, player); // TODO: store copy/paste history
-				particle(centered, AQUA);
-				hologram(player, centered, "&o&lPasted!");
+				particle(player, centered, AQUA);
+				hologram(player, centered, sign.getType(), "&o&lPasted!");
 				
 			}
 			catch (SignPasteException e)
 			{
-				particle(centered, RED);
-				hologram(player, centered, "&o&lCould not paste...");
+				particle(player, centered, RED);
+				hologram(player, centered, sign.getType(), "&o&lCould not paste...");
 			}
 		}
 	}
@@ -197,33 +199,33 @@ public class SignListener implements Listener
 		
 		// Since there's a slight delay, play some particles!!
 		Location centered = location.clone().add(0.5, 0.5, 0.5);
-		particle(centered, AQUA);
+		particle(player, centered, AQUA);
 		
 		// Place it on the next tick.
 		plugin.sync().run(() ->
 		{
 			location.getBlock().setBlockData(clonedBlockData);
 			
-			Signs.blockState(location.getBlock()).ifPresent(sign -> {
+			Signs.blockState(location.getBlock()).ifPresent(sign ->
+			{
 				try
 				{
 					copy.paste(sign, player);
-					hologram(player, centered, "&o&lPasted!");
+					// Already played particles above
+					hologram(player, centered, clonedBlockData.getMaterial(), "&o&lPasted!");
 				}
 				catch (SignPasteException e)
 				{
-					particle(centered, RED);
-					hologram(player, centered, "&o&lCould not paste...");
+					particle(player, centered, RED);
+					hologram(player, centered, clonedBlockData.getMaterial(), "&o&lCould not paste...");
 				}
 			});
 		});
 	}
 	
-	private void particle(Location location, Color color)
+	private void particle(Player player, Location location, Color color)
 	{
-		if (location.getWorld() == null) { return; }
-		
-		location.getWorld().spawnParticle(
+		player.spawnParticle(
 			Particle.REDSTONE,
 			location,
 			25,
@@ -235,8 +237,19 @@ public class SignListener implements Listener
 		);
 	}
 	
-	private void hologram(Player player, Location location, String text)
+	private void hologram(Player player, Location location, Material material, String text)
 	{
+		if (!material.name().contains("WALL_SIGN"))
+		{
+			location = location.clone().add(
+				player.getLocation().toVector()
+					.subtract(location.toVector())
+					.normalize()
+					.multiply(0.5)
+					.setY(0.35)
+			);
+		}
+		
 		Hologram hologram = plugin.holograms().showHologram(player, location, Strings.colorful(text));
 		plugin.sync().delay(1).seconds().run(hologram::destroy);
 	}
