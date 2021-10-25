@@ -8,8 +8,9 @@
 package community.leaf.signmanager;
 
 import community.leaf.signmanager.util.Keys;
-import community.leaf.signmanager.util.Persistable;
+import community.leaf.signmanager.util.persistence.Persistable;
 import community.leaf.signmanager.util.Signs;
+import community.leaf.signmanager.util.persistence.PersistableTypes;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -42,8 +43,8 @@ public class SignLine implements Persistable<PersistentDataContainer, SignLine>
 			{
 				PersistentDataContainer data = context.newPersistentDataContainer();
 				
-				data.set(Keys.signManager("index"), PersistentDataType.BYTE, (byte) complex.index());
-				data.set(Keys.signManager("text"), PersistentDataType.STRING, complex.text());
+				data.set(Keys.signManager("index"), PersistableTypes.BYTE, (byte) complex.index());
+				data.set(Keys.signManager("text"), PersistableTypes.STRING, complex.text());
 				
 				return data;
 			}
@@ -51,10 +52,10 @@ public class SignLine implements Persistable<PersistentDataContainer, SignLine>
 			@Override
 			public SignLine fromPrimitive(PersistentDataContainer primitive, PersistentDataAdapterContext context)
 			{
-				@NullOr Byte index = primitive.get(Keys.signManager("index"), PersistentDataType.BYTE);
+				@NullOr Byte index = primitive.get(Keys.signManager("index"), PersistableTypes.BYTE);
 				if (index == null) { throw new NullPointerException("index"); }
 				
-				@NullOr String content = primitive.get(Keys.signManager("text"), PersistentDataType.STRING);
+				@NullOr String content = primitive.get(Keys.signManager("text"), PersistableTypes.STRING);
 				if (content == null) { throw new NullPointerException("text"); }
 				
 				return new SignLine(index.intValue(), content);

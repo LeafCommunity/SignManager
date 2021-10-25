@@ -17,6 +17,8 @@ public class MinecraftVersions
 {
 	private MinecraftVersions() { throw new UnsupportedOperationException(); }
 	
+	public static final Version V1_16_0 = Version.forIntegers(1, 16);
+	
 	public static final Version V1_16_5 = Version.forIntegers(1, 16, 5);
 	
 	public static final Version V1_17_0 = Version.forIntegers(1, 17);
