@@ -8,8 +8,6 @@
 package community.leaf.signmanager.holograms;
 
 import community.leaf.signmanager.util.Keys;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
@@ -23,10 +21,7 @@ public class EntityHologramSource implements HologramSource
 	public static final NamespacedKey HOLOGRAM_KEY = Keys.signManager("hologram");
 	
 	@Override
-	public boolean supportsLocalHolograms() { return false; }
-	
-	@Override
-	public Hologram showHologram(Player viewer, Location location, BaseComponent[] text)
+	public Hologram showHologram(Player player, Location location, String text)
 	{
 		@NullOr World world = location.getWorld();
 		if (world == null) { throw new NullPointerException("Location has null world"); }
@@ -34,14 +29,13 @@ public class EntityHologramSource implements HologramSource
 		Location base = Hologram.baseOffsetFromTopLocation(location);
 		
 		return new EntityHologram(
-			viewer,
 			world.spawn(base, ArmorStand.class, armorStand ->
 			{
 				armorStand.setInvisible(true);
 				armorStand.setGravity(false);
 				
 				armorStand.setCustomNameVisible(true);
-				armorStand.setCustomName(TextComponent.toLegacyText(text));
+				armorStand.setCustomName(text);
 				
 				armorStand.getPersistentDataContainer().set(HOLOGRAM_KEY, PersistentDataType.BYTE, (byte) 1);
 				armorStand.setPersistent(false);
@@ -51,20 +45,12 @@ public class EntityHologramSource implements HologramSource
 	
 	static class EntityHologram implements Hologram
 	{
-		private final Player viewer;
 		private final ArmorStand armorStand;
 		
-		EntityHologram(Player viewer, ArmorStand armorStand)
+		EntityHologram(ArmorStand armorStand)
 		{
-			this.viewer = viewer;
 			this.armorStand = armorStand;
 		}
-		
-		@Override
-		public boolean isLocal() { return false; }
-		
-		@Override
-		public Player viewer() { return viewer; }
 		
 		@Override
 		public Location location() { return armorStand.getLocation(); }

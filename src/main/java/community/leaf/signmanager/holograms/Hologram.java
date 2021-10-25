@@ -8,7 +8,6 @@
 package community.leaf.signmanager.holograms;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 public interface Hologram
 {
@@ -17,10 +16,6 @@ public interface Hologram
 		// Height: 1.975 blocks
 		return top.clone().subtract(0, 1.975, 0);
 	}
-	
-	boolean isLocal();
-	
-	Player viewer();
 	
 	Location location();
 	

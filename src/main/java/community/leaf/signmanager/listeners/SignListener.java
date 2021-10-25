@@ -16,8 +16,8 @@ import community.leaf.signmanager.SignManagerPlugin;
 import community.leaf.signmanager.exceptions.SignPasteException;
 import community.leaf.signmanager.holograms.Hologram;
 import community.leaf.signmanager.util.Signs;
+import community.leaf.signmanager.util.Strings;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Color;
@@ -237,8 +237,7 @@ public class SignListener implements Listener
 	
 	private void hologram(Player player, Location location, String text)
 	{
-		BaseComponent[] components = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', text));
-		Hologram hologram = plugin.holograms().showHologram(player, location, components);
+		Hologram hologram = plugin.holograms().showHologram(player, location, Strings.colorful(text));
 		plugin.sync().delay(1).seconds().run(hologram::destroy);
 	}
 }

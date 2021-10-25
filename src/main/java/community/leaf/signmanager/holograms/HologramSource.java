@@ -7,13 +7,10 @@
  */
 package community.leaf.signmanager.holograms;
 
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public interface HologramSource
 {
-	boolean supportsLocalHolograms();
-	
-	Hologram showHologram(Player viewer, Location location, BaseComponent[] text);
+	Hologram showHologram(Player player, Location location, String text);
 }

@@ -17,7 +17,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject;
 import community.leaf.signmanager.SignManagerPlugin;
 import community.leaf.signmanager.util.MinecraftVersions;
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -43,9 +43,6 @@ public class PacketHologramSource implements HologramSource
 		this.plugin = plugin;
 		this.protocol = ProtocolLibrary.getProtocolManager();
 	}
-	
-	@Override
-	public boolean supportsLocalHolograms() { return true; }
 	
 	private boolean sendPacket(Player player, PacketType type, Consumer<PacketContainer> packer)
 	{
@@ -78,14 +75,14 @@ public class PacketHologramSource implements HologramSource
 	private static <T> T resolve(Supplier<T> supplier) { return supplier.get(); }
 	
 	@Override
-	public Hologram showHologram(Player viewer, Location location, BaseComponent[] text)
+	public Hologram showHologram(Player player, Location location, String text)
 	{
 		Location base = Hologram.baseOffsetFromTopLocation(location);
 		int entityId = ThreadLocalRandom.current().nextInt(MIN_ID, Integer.MAX_VALUE);
 		
 		// Packet #1: spawn the fake armor stand
 		// https://wiki.vg/Protocol#Spawn_Living_Entity
-		sendPacket(viewer, PacketType.Play.Server.SPAWN_ENTITY_LIVING, spawn ->
+		sendPacket(player, PacketType.Play.Server.SPAWN_ENTITY_LIVING, spawn ->
 		{
 			spawn.getIntegers().write(0, entityId);
 			spawn.getUUIDs().write(0, UUID.randomUUID());
@@ -100,7 +97,7 @@ public class PacketHologramSource implements HologramSource
 		
 		// Packet #2: send fake armor stand metadata
 		// https://wiki.vg/Protocol#Entity_Metadata
-		sendPacket(viewer, PacketType.Play.Server.ENTITY_METADATA, metadata ->
+		sendPacket(player, PacketType.Play.Server.ENTITY_METADATA, metadata ->
 		{
 			metadata.getIntegers().write(0, entityId);
 			metadata.getWatchableCollectionModifier().write(0, resolve(() ->
@@ -112,9 +109,11 @@ public class PacketHologramSource implements HologramSource
 				watcher.setObject(new WrappedDataWatcherObject(0, Registry.get(Byte.class)), (byte) 0x20);
 				
 				// Custom name
+				String customNameJson = ComponentSerializer.toString(TextComponent.fromLegacyText(text));
+				
 				watcher.setObject(
 					new WrappedDataWatcherObject(2, Registry.getChatComponentSerializer(true)),
-					Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(text)).getHandle())
+					Optional.of(WrappedChatComponent.fromJson(customNameJson).getHandle())
 				);
 				
 				// Make custom name visible
@@ -127,7 +126,7 @@ public class PacketHologramSource implements HologramSource
 			}));
 		});
 		
-		return new PacketHologram(viewer, base, entityId);
+		return new PacketHologram(player, base, entityId);
 	}
 	
 	class PacketHologram implements Hologram
@@ -144,12 +143,6 @@ public class PacketHologramSource implements HologramSource
 			this.location = location;
 			this.entityId = entityId;
 		}
-		
-		@Override
-		public boolean isLocal() { return true; }
-		
-		@Override
-		public Player viewer() { return viewer; }
 		
 		@Override
 		public Location location() { return location; }
