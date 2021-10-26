@@ -11,15 +11,15 @@ import community.leaf.signmanager.util.Components;
 import community.leaf.signmanager.util.Keys;
 import community.leaf.signmanager.util.MinecraftVersions;
 import community.leaf.signmanager.util.persistence.JsonPersistentDataContainer;
-import community.leaf.signmanager.util.persistence.PersistableTypes;
+import community.leaf.signmanager.util.persistence.Persistent;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import pl.tlinkowski.annotation.basic.NullOr;
@@ -32,6 +32,12 @@ import java.util.Optional;
 
 public class ClipboardItem
 {
+	private static final NamespacedKey CLIPBOARD_KEY = Keys.signManager("clipboard");
+	
+	private static final NamespacedKey TEMPORARY_KEY = Keys.signManager("temporary");
+	
+	private static final NamespacedKey COPY_KEY = Keys.signManager("copy");
+	
 	private static final Map<CopyData.Version, CopyData> DATA_BY_VERSION = new EnumMap<>(CopyData.Version.class);
 	
 	static
@@ -49,11 +55,8 @@ public class ClipboardItem
 		
 		PersistentDataContainer data = meta.getPersistentDataContainer();
 		
-		CopyData.Version version =
-			data.getOrDefault(Keys.signManager("clipboard"), CopyData.Version.TYPE, CopyData.Version.supported());
-		
-		boolean isTemporary =
-			data.getOrDefault(Keys.signManager("temporary"), PersistableTypes.BOOLEAN, false);
+		CopyData.Version version = data.getOrDefault(CLIPBOARD_KEY, CopyData.Version.TYPE, CopyData.Version.supported());
+		boolean isTemporary = data.getOrDefault(TEMPORARY_KEY, Persistent.Types.BOOLEAN, false);
 		
 		return Optional.of(new ClipboardItem(item, DATA_BY_VERSION.get(version), isTemporary));
 	}
@@ -92,7 +95,8 @@ public class ClipboardItem
 		ItemMeta meta = meta();
 		PersistentDataContainer data = meta.getPersistentDataContainer();
 		
-		data.set(Keys.signManager("clipboard"), CopyData.Version.TYPE, storage.version());
+		data.set(CLIPBOARD_KEY, CopyData.Version.TYPE, storage.version());
+		if (isTemporary) { data.set(TEMPORARY_KEY, Persistent.Types.BOOLEAN, true); }
 		storage.setCopiedSign(data, copy);
 		
 		meta.addEnchant(Enchantment.DURABILITY, 1, true);
@@ -128,33 +132,22 @@ public class ClipboardItem
 			JSON,
 			NBT;
 			
-			@SuppressWarnings("NullableProblems")
-			static final PersistentDataType<Byte, Version> TYPE =
-				new PersistentDataType<>()
-				{
-					@Override
-					public Class<Byte> getPrimitiveType() { return Byte.class; }
-					
-					@Override
-					public Class<Version> getComplexType() { return Version.class; }
-					
-					@Override
-					public Byte toPrimitive(Version complex, PersistentDataAdapterContext context)
-					{
-						return (byte) complex.ordinal();
-					}
-					
-					@Override
-					public Version fromPrimitive(Byte primitive, PersistentDataAdapterContext context)
-					{
-						return Version.values()[primitive];
-					}
-				};
+			public static final PersistentDataType<Byte, Version> TYPE =
+				Persistent.dataType(
+					Byte.class,
+					Version.class,
+					(version) -> (byte) version.ordinal(),
+					(primitive) -> Version.values()[primitive]
+				);
 			
-			static Version supported()
+			private static final Version SUPPORTED;
+			
+			static
 			{
-				return (MinecraftVersions.SERVER.lessThan(MinecraftVersions.V1_16_0)) ? JSON : NBT;
+				SUPPORTED = (MinecraftVersions.SERVER.lessThan(MinecraftVersions.V1_16_0)) ? JSON : NBT;
 			}
+			
+			public static Version supported() { return SUPPORTED; }
 		}
 		
 		Version version();
@@ -172,7 +165,7 @@ public class ClipboardItem
 			@Override
 			public @NullOr CopiedSign getCopiedSign(PersistentDataContainer data)
 			{
-				@NullOr String json = data.get(Keys.signManager("copy"), PersistableTypes.STRING);
+				@NullOr String json = data.get(COPY_KEY, Persistent.Types.STRING);
 				return (json == null) ? null : JsonPersistentDataContainer.fromJsonString(CopiedSign.TYPE, json);
 			}
 			
@@ -180,8 +173,8 @@ public class ClipboardItem
 			public void setCopiedSign(PersistentDataContainer data, CopiedSign copy)
 			{
 				data.set(
-					Keys.signManager("copy"),
-					PersistableTypes.STRING,
+					COPY_KEY,
+					Persistent.Types.STRING,
 					JsonPersistentDataContainer.of(CopiedSign.TYPE, copy).json().toString()
 				);
 			}
@@ -195,13 +188,13 @@ public class ClipboardItem
 			@Override
 			public @NullOr CopiedSign getCopiedSign(PersistentDataContainer data)
 			{
-				return data.get(Keys.signManager("copy"), CopiedSign.TYPE);
+				return data.get(COPY_KEY, CopiedSign.TYPE);
 			}
 			
 			@Override
 			public void setCopiedSign(PersistentDataContainer data, CopiedSign copy)
 			{
-				data.set(Keys.signManager("copy"), CopiedSign.TYPE, copy);
+				data.set(COPY_KEY, CopiedSign.TYPE, copy);
 			}
 		}
 	}

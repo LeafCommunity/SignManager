@@ -9,8 +9,7 @@ package community.leaf.signmanager;
 
 import community.leaf.signmanager.util.Keys;
 import community.leaf.signmanager.util.Signs;
-import community.leaf.signmanager.util.persistence.Persistable;
-import community.leaf.signmanager.util.persistence.PersistableTypes;
+import community.leaf.signmanager.util.persistence.Persistent;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class SignLine implements Persistable<PersistentDataContainer, SignLine>
+public class SignLine implements Persistent<PersistentDataContainer, SignLine>
 {
 	@SuppressWarnings("NullableProblems")
 	public static final PersistentDataType<PersistentDataContainer, SignLine> TYPE =
@@ -43,8 +42,8 @@ public class SignLine implements Persistable<PersistentDataContainer, SignLine>
 			{
 				PersistentDataContainer data = context.newPersistentDataContainer();
 				
-				data.set(Keys.signManager("index"), PersistableTypes.BYTE, (byte) complex.index());
-				data.set(Keys.signManager("text"), PersistableTypes.STRING, complex.text());
+				data.set(Keys.signManager("index"), Types.BYTE, (byte) complex.index());
+				data.set(Keys.signManager("text"), Types.STRING, complex.text());
 				
 				return data;
 			}
@@ -52,10 +51,10 @@ public class SignLine implements Persistable<PersistentDataContainer, SignLine>
 			@Override
 			public SignLine fromPrimitive(PersistentDataContainer primitive, PersistentDataAdapterContext context)
 			{
-				@NullOr Byte index = primitive.get(Keys.signManager("index"), PersistableTypes.BYTE);
+				@NullOr Byte index = primitive.get(Keys.signManager("index"), Types.BYTE);
 				if (index == null) { throw new NullPointerException("index"); }
 				
-				@NullOr String content = primitive.get(Keys.signManager("text"), PersistableTypes.STRING);
+				@NullOr String content = primitive.get(Keys.signManager("text"), Types.STRING);
 				if (content == null) { throw new NullPointerException("text"); }
 				
 				return new SignLine(index.intValue(), content);
