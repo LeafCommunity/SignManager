@@ -16,12 +16,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import pl.tlinkowski.annotation.basic.NullOr;
 
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @SuppressWarnings("NullableProblems")
 public class JsonPersistentDataContainer implements PersistentDataContainer
 {
@@ -95,16 +89,6 @@ public class JsonPersistentDataContainer implements PersistentDataContainer
 	{
 		@NullOr Z z = get(key, type);
 		return (z != null) ? z : defaultValue;
-	}
-	
-	@Override
-	public Set<NamespacedKey> getKeys()
-	{
-		return json.entrySet().stream()
-			.map(Map.Entry::getKey)
-			.map(NamespacedKey::fromString)
-			.filter(Objects::nonNull)
-			.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 	
 	@Override

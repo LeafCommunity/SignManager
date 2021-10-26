@@ -9,24 +9,13 @@ package community.leaf.signmanager.util;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 
-import java.util.function.Supplier;
-
 public class Components
 {
 	private Components() { throw new UnsupportedOperationException(); }
 	
-	private static final Supplier<ComponentBuilder> BUILDER_SOURCE;
-	
-	static
-	{
-		BUILDER_SOURCE =
-			(MinecraftVersions.SERVER.lessThan(MinecraftVersions.V1_16_5))
-				? () -> new ComponentBuilder("")
-				: ComponentBuilder::new;
-	}
-	
+	// a new empty builder. . . . . .
 	public static ComponentBuilder builder()
 	{
-		return BUILDER_SOURCE.get();
+		return new ComponentBuilder("");
 	}
 }

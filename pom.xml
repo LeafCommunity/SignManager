@@ -52,7 +52,7 @@
 		<license.header.url>https://github.com/LeafCommunity/SignManager</license.header.url>
 
 		<!-- Versions -->
-		<versions.minecraft>1.17-R0.1-SNAPSHOT</versions.minecraft>
+		<versions.minecraft>1.14.4-R0.1-SNAPSHOT</versions.minecraft>
 	</properties>
 
 	<repositories>

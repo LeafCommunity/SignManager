@@ -62,12 +62,10 @@ public class SignListener implements Listener
 		if (hand == null) { return; }
 		
 		Player player = event.getPlayer();
-		ItemStack item = player.getInventory().getItem(hand);
-		
-		@NullOr ClipboardItem clipboard = ClipboardItem.of(item).orElse(null);
-		if (clipboard == null) { return; }
-		
 		if (player.isSneaking()) { return; } // Do nothing if sneaking.
+		
+		@NullOr ClipboardItem clipboard = ClipboardItem.of(player, hand).orElse(null);
+		if (clipboard == null) { return; }
 		
 		Location centered = sign.getLocation().clone().add(0.5, 0.5, 0.5);
 		

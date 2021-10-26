@@ -17,6 +17,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,8 +48,9 @@ public class ClipboardItem
 		DATA_BY_VERSION.put(CopyData.Version.NBT, new CopyData.NbtCopyData());
 	}
 	
-	public static Optional<ClipboardItem> of(ItemStack item)
+	public static Optional<ClipboardItem> of(@NullOr ItemStack item)
 	{
+		if (item == null) { return Optional.empty(); }
 		if (!Tag.SIGNS.isTagged(item.getType())) { return Optional.empty(); }
 		
 		@NullOr ItemMeta meta = item.getItemMeta();
@@ -59,6 +62,13 @@ public class ClipboardItem
 		boolean isTemporary = data.getOrDefault(TEMPORARY_KEY, Persistent.Types.BOOLEAN, false);
 		
 		return Optional.of(new ClipboardItem(item, DATA_BY_VERSION.get(version), isTemporary));
+	}
+	
+	public static Optional<ClipboardItem> of(Player player, EquipmentSlot hand)
+	{
+		if (hand == EquipmentSlot.HAND) { return of(player.getInventory().getItemInMainHand()); }
+		if (hand == EquipmentSlot.OFF_HAND) { return of(player.getInventory().getItemInOffHand()); }
+		return Optional.empty();
 	}
 	
 	private final ItemStack item;

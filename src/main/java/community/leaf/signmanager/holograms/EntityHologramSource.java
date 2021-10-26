@@ -8,12 +8,12 @@
 package community.leaf.signmanager.holograms;
 
 import community.leaf.signmanager.util.Keys;
+import community.leaf.signmanager.util.persistence.Persistent;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-import org.bukkit.persistence.PersistentDataType;
 import pl.tlinkowski.annotation.basic.NullOr;
 
 public class EntityHologramSource implements HologramSource
@@ -31,14 +31,16 @@ public class EntityHologramSource implements HologramSource
 		return new EntityHologram(
 			world.spawn(base, ArmorStand.class, armorStand ->
 			{
-				armorStand.setInvisible(true);
+				armorStand.setCollidable(false);
 				armorStand.setGravity(false);
+				armorStand.setInvulnerable(true);
+				armorStand.setPersistent(false);
+				armorStand.setVisible(false);
 				
 				armorStand.setCustomNameVisible(true);
 				armorStand.setCustomName(text);
 				
-				armorStand.getPersistentDataContainer().set(HOLOGRAM_KEY, PersistentDataType.BYTE, (byte) 1);
-				armorStand.setPersistent(false);
+				armorStand.getPersistentDataContainer().set(HOLOGRAM_KEY, Persistent.Types.BOOLEAN, true);
 			}
 		));
 	}
