@@ -11,42 +11,30 @@ import community.leaf.eventful.bukkit.CancellationPolicy;
 import community.leaf.eventful.bukkit.ListenerOrder;
 import community.leaf.eventful.bukkit.annotations.CancelledEvents;
 import community.leaf.eventful.bukkit.annotations.EventListener;
+import community.leaf.signmanager.ClipboardItem;
 import community.leaf.signmanager.CopiedSign;
 import community.leaf.signmanager.SignManagerPlugin;
 import community.leaf.signmanager.exceptions.SignPasteException;
 import community.leaf.signmanager.holograms.Hologram;
 import community.leaf.signmanager.util.Signs;
 import community.leaf.signmanager.util.Strings;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.util.Vector;
 import pl.tlinkowski.annotation.basic.NullOr;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @CancelledEvents(CancellationPolicy.REJECT)
 public class SignListener implements Listener
@@ -76,60 +64,28 @@ public class SignListener implements Listener
 		Player player = event.getPlayer();
 		ItemStack item = player.getInventory().getItem(hand);
 		
-		if (!Tag.SIGNS.isTagged(item.getType())) { return; } // Only continue if holding a sign.
+		@NullOr ClipboardItem clipboard = ClipboardItem.of(item).orElse(null);
+		if (clipboard == null) { return; }
+		
 		if (player.isSneaking()) { return; } // Do nothing if sneaking.
 		
-		@NullOr ItemMeta meta = item.getItemMeta();
-		if (meta == null) { return; }
-		
-		PersistentDataContainer data = meta.getPersistentDataContainer();
-		NamespacedKey key = new NamespacedKey(plugin, "clipboard");
 		Location centered = sign.getLocation().clone().add(0.5, 0.5, 0.5);
 		
 		// COPY
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK)
 		{
 			event.setCancelled(true); // Prevent breaking the sign.
-			
-			CopiedSign copy = new CopiedSign(sign);
-			data.set(key, CopiedSign.TYPE, copy);
-			
-			meta.addEnchant(Enchantment.DURABILITY, 1, true);
-			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-			
-			List<String> lore = new ArrayList<>();
-			
-			lore.add("Punch to copy or click to paste:");
-			
-			// Preview lines
-			copy.lines().stream()
-				.map(line ->
-					new ComponentBuilder()
-						.append("→ #" + (line.index() + 1) + ": ")
-							.color(ChatColor.GRAY)
-						.append(new TextComponent(line.toPreview()))
-							.color(ChatColor.WHITE)
-						.create()
-				)
-				.map(TextComponent::toLegacyText)
-				.forEach(lore::add);
-				
-			meta.setDisplayName("Punch to copy, click to paste!");
-			meta.setLore(lore);
-			item.setItemMeta(meta);
-			
+			clipboard.storeCopyThenUpdateLore(new CopiedSign(sign));
 			particle(player, centered, MAGENTA);
 			hologram(player, centered, sign.getType(), "&o&lCopied!");
 		}
 		// PASTE
 		else if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
 		{
-			if (!data.has(key, PersistentDataType.TAG_CONTAINER)) { return; }
+			@NullOr CopiedSign copy = clipboard.copiedSign().orElse(null);
+			if (copy == null) { return; }
 			
 			event.setCancelled(true); // Cancel interaction in case other plugins handle sign clicks.
-			
-			@NullOr CopiedSign copy = data.get(key, CopiedSign.TYPE);
-			if (copy == null) { return; }
 			
 			try
 			{
@@ -176,13 +132,8 @@ public class SignListener implements Listener
 		BlockData clonedBlockData = block.getBlockData().clone();
 		ItemStack item = event.getItemInHand();
 		
-		@NullOr ItemMeta meta = item.getItemMeta();
-		if (meta == null) { return; }
-		
-		PersistentDataContainer data = meta.getPersistentDataContainer();
-		NamespacedKey key = new NamespacedKey(plugin, "clipboard");
-		
-		if (!data.has(key, PersistentDataType.TAG_CONTAINER)) { return; }
+		@NullOr CopiedSign copy = ClipboardItem.of(item).flatMap(ClipboardItem::copiedSign).orElse(null);
+		if (copy == null) { return; }
 		
 		// Handle placing the sign manually (skip sign editor UI)
 		event.setCancelled(true);
@@ -190,9 +141,6 @@ public class SignListener implements Listener
 		// Check if the player can actually place the sign...
 		SignPlaceEvent place = plugin.events().call(new SignPlaceEvent());
 		if (place.isCancelled() || !place.canBuild()) { return; }
-		
-		@NullOr CopiedSign copy = data.get(key, CopiedSign.TYPE);
-		if (copy == null) { return; }
 		
 		// Serialized data exists, subtract one clipboard from the player's inventory if they're not in creative.
 		if (player.getGameMode() != GameMode.CREATIVE) { item.setAmount(item.getAmount() - 1); }

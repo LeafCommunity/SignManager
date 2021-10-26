@@ -35,8 +35,6 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 		
 		getLogger().info("Minecraft version: " + MinecraftVersions.SERVER);
 		
-		events().register(new SignListener(this));
-		
 		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib"))
 		{
 			getLogger().info("Using packet-based holograms (via ProtocolLib).");
@@ -47,6 +45,8 @@ public class SignManagerPlugin extends JavaPlugin implements BukkitEventSource, 
 			getLogger().info("Using entity-based holograms.");
 			holograms = new EntityHologramSource();
 		}
+		
+		events().register(new SignListener(this));
 	}
 	
 	@Override

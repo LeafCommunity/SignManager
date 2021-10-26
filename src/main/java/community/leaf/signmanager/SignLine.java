@@ -8,8 +8,8 @@
 package community.leaf.signmanager;
 
 import community.leaf.signmanager.util.Keys;
-import community.leaf.signmanager.util.persistence.Persistable;
 import community.leaf.signmanager.util.Signs;
+import community.leaf.signmanager.util.persistence.Persistable;
 import community.leaf.signmanager.util.persistence.PersistableTypes;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;

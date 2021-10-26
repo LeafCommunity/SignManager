@@ -10,6 +10,7 @@ package community.leaf.signmanager.util.persistence;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.rezzedup.util.constants.Aggregates;
 import com.rezzedup.util.constants.annotations.AggregatedResult;
 import com.rezzedup.util.constants.types.TypeCapture;
@@ -32,6 +33,19 @@ import java.util.stream.Collectors;
 @SuppressWarnings("NullableProblems")
 public class JsonPersistentDataContainer implements PersistentDataContainer
 {
+	public static <Z> JsonPersistentDataContainer of(PersistentDataType<PersistentDataContainer, Z> type, Z complex)
+	{
+		return (JsonPersistentDataContainer) type.toPrimitive(complex, JsonPersistentDataContainer::new);
+	}
+	
+	public static <Z> Z fromJsonString(PersistentDataType<PersistentDataContainer, Z> type, String json)
+	{
+		return type.fromPrimitive(
+			new JsonPersistentDataContainer(new JsonParser().parse(json).getAsJsonObject()),
+			JsonPersistentDataContainer::new
+		);
+	}
+	
 	private final JsonObject json;
 	
 	public JsonPersistentDataContainer(JsonObject json) { this.json = json; }
