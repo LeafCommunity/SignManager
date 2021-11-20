@@ -7,9 +7,10 @@
  */
 package community.leaf.signmanager;
 
+import community.leaf.persistence.Persistent;
+import community.leaf.persistence.PersistentDataTypes;
 import community.leaf.signmanager.util.Keys;
 import community.leaf.signmanager.util.Signs;
-import community.leaf.signmanager.util.persistence.Persistent;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -42,8 +43,8 @@ public class SignLine implements Persistent<PersistentDataContainer, SignLine>
 			{
 				PersistentDataContainer data = context.newPersistentDataContainer();
 				
-				data.set(Keys.signManager("index"), Types.BYTE, (byte) complex.index());
-				data.set(Keys.signManager("text"), Types.STRING, complex.text());
+				data.set(Keys.signManager("index"), PersistentDataTypes.BYTE, (byte) complex.index());
+				data.set(Keys.signManager("text"), PersistentDataTypes.STRING, complex.text());
 				
 				return data;
 			}
@@ -51,10 +52,10 @@ public class SignLine implements Persistent<PersistentDataContainer, SignLine>
 			@Override
 			public SignLine fromPrimitive(PersistentDataContainer primitive, PersistentDataAdapterContext context)
 			{
-				@NullOr Byte index = primitive.get(Keys.signManager("index"), Types.BYTE);
+				@NullOr Byte index = primitive.get(Keys.signManager("index"), PersistentDataTypes.BYTE);
 				if (index == null) { throw new NullPointerException("index"); }
 				
-				@NullOr String content = primitive.get(Keys.signManager("text"), Types.STRING);
+				@NullOr String content = primitive.get(Keys.signManager("text"), PersistentDataTypes.STRING);
 				if (content == null) { throw new NullPointerException("text"); }
 				
 				return new SignLine(index.intValue(), content);

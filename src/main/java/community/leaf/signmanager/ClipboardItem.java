@@ -7,11 +7,12 @@
  */
 package community.leaf.signmanager;
 
+import community.leaf.persistence.Persistent;
+import community.leaf.persistence.PersistentDataTypes;
+import community.leaf.persistence.json.JsonPersistentDataContainer;
 import community.leaf.signmanager.util.Components;
 import community.leaf.signmanager.util.Keys;
 import community.leaf.signmanager.util.MinecraftVersions;
-import community.leaf.signmanager.util.persistence.JsonPersistentDataContainer;
-import community.leaf.signmanager.util.persistence.Persistent;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.NamespacedKey;
@@ -59,7 +60,7 @@ public class ClipboardItem
 		PersistentDataContainer data = meta.getPersistentDataContainer();
 		
 		CopyData.Version version = data.getOrDefault(CLIPBOARD_KEY, CopyData.Version.TYPE, CopyData.Version.supported());
-		boolean isTemporary = data.getOrDefault(TEMPORARY_KEY, Persistent.Types.BOOLEAN, false);
+		boolean isTemporary = data.getOrDefault(TEMPORARY_KEY, PersistentDataTypes.BOOLEAN, false);
 		
 		return Optional.of(new ClipboardItem(item, DATA_BY_VERSION.get(version), isTemporary));
 	}
@@ -106,7 +107,7 @@ public class ClipboardItem
 		PersistentDataContainer data = meta.getPersistentDataContainer();
 		
 		data.set(CLIPBOARD_KEY, CopyData.Version.TYPE, storage.version());
-		if (isTemporary) { data.set(TEMPORARY_KEY, Persistent.Types.BOOLEAN, true); }
+		if (isTemporary) { data.set(TEMPORARY_KEY, PersistentDataTypes.BOOLEAN, true); }
 		storage.setCopiedSign(data, copy);
 		
 		meta.addEnchant(Enchantment.DURABILITY, 1, true);
@@ -175,7 +176,7 @@ public class ClipboardItem
 			@Override
 			public @NullOr CopiedSign getCopiedSign(PersistentDataContainer data)
 			{
-				@NullOr String json = data.get(COPY_KEY, Persistent.Types.STRING);
+				@NullOr String json = data.get(COPY_KEY, PersistentDataTypes.STRING);
 				return (json == null) ? null : JsonPersistentDataContainer.fromJsonString(CopiedSign.TYPE, json);
 			}
 			
@@ -184,7 +185,7 @@ public class ClipboardItem
 			{
 				data.set(
 					COPY_KEY,
-					Persistent.Types.STRING,
+					PersistentDataTypes.STRING,
 					JsonPersistentDataContainer.of(CopiedSign.TYPE, copy).json().toString()
 				);
 			}

@@ -8,10 +8,11 @@
 package community.leaf.signmanager;
 
 import community.leaf.eventful.bukkit.Events;
+import community.leaf.persistence.Persistent;
+import community.leaf.persistence.PersistentDataTypes;
 import community.leaf.signmanager.events.SignPasteEvent;
 import community.leaf.signmanager.exceptions.SignPasteException;
 import community.leaf.signmanager.util.Keys;
-import community.leaf.signmanager.util.persistence.Persistent;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
@@ -44,7 +45,7 @@ public class CopiedSign implements Persistent<PersistentDataContainer, CopiedSig
 				
 				data.set(
 					Keys.signManager("lines"),
-					Types.TAG_CONTAINER_ARRAY,
+					PersistentDataTypes.TAG_CONTAINER_ARRAY,
 					complex.lines().stream()
 						.map(line -> line.toPersistentData(context))
 						.toArray(PersistentDataContainer[]::new)
@@ -57,7 +58,7 @@ public class CopiedSign implements Persistent<PersistentDataContainer, CopiedSig
 			public CopiedSign fromPrimitive(PersistentDataContainer primitive, PersistentDataAdapterContext context)
 			{
 				@NullOr PersistentDataContainer @NullOr[] lines =
-					primitive.get(Keys.signManager("lines"), Types.TAG_CONTAINER_ARRAY);
+					primitive.get(Keys.signManager("lines"), PersistentDataTypes.TAG_CONTAINER_ARRAY);
 				
 				if (lines == null) { throw new NullPointerException("lines"); }
 				

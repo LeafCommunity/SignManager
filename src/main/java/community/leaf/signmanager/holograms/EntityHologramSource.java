@@ -7,8 +7,8 @@
  */
 package community.leaf.signmanager.holograms;
 
+import community.leaf.persistence.PersistentDataTypes;
 import community.leaf.signmanager.util.Keys;
-import community.leaf.signmanager.util.persistence.Persistent;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
@@ -40,7 +40,7 @@ public class EntityHologramSource implements HologramSource
 				armorStand.setCustomNameVisible(true);
 				armorStand.setCustomName(text);
 				
-				armorStand.getPersistentDataContainer().set(HOLOGRAM_KEY, Persistent.Types.BOOLEAN, true);
+				armorStand.getPersistentDataContainer().set(HOLOGRAM_KEY, PersistentDataTypes.BOOLEAN, true);
 			}
 		));
 	}

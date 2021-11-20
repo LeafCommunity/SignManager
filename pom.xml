@@ -99,6 +99,12 @@
 			<artifactId>events-bukkit</artifactId>
 			<version>0.3.0</version>
 		</dependency>
+		<!-- LeafCommunity Persistence (via jitpack.io) -->
+		<dependency>
+			<groupId>community.leaf.persistence</groupId>
+			<artifactId>json-persistent-data-container</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 		<!-- LeafCommunity Tasks (via jitpack.io) -->
 		<dependency>
 			<groupId>community.leaf.tasks</groupId>
