@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2021, RezzedUp <https://github.com/LeafCommunity/SignManager>
+ * Copyright © 2016-2022, RezzedUp <https://github.com/LeafCommunity/SignManager>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,25 +16,25 @@ import java.util.stream.IntStream;
 
 public class Signs
 {
-	private Signs() { throw new UnsupportedOperationException(); }
-	
-	public static boolean isIndex(int index) { return 0 <= index && index < 4; }
-	
-	public static int index(int index)
-	{
-		if (isIndex(index)) { return index; }
-		throw new IndexOutOfBoundsException(index);
-	}
-	
-	public static IntStream indexRange() { return IntStream.range(0, 4); }
-	
-	public static Optional<org.bukkit.block.Sign> blockState(@NullOr Block block)
-	{
-		return (block == null) ? Optional.empty() : Cast.as(org.bukkit.block.Sign.class, block.getState());
-	}
-	
-	public static Optional<org.bukkit.block.data.type.Sign> blockData(@NullOr Block block)
-	{
-		return (block == null) ? Optional.empty() : Cast.as(org.bukkit.block.data.type.Sign.class, block.getBlockData());
-	}
+    private Signs() { throw new UnsupportedOperationException(); }
+    
+    public static boolean isIndex(int index) { return 0 <= index && index < 4; }
+    
+    public static int index(int index)
+    {
+        if (isIndex(index)) { return index; }
+        throw new IndexOutOfBoundsException(index);
+    }
+    
+    public static IntStream indexRange() { return IntStream.range(0, 4); }
+    
+    public static Optional<org.bukkit.block.Sign> blockState(@NullOr Block block)
+    {
+        return (block == null) ? Optional.empty() : Cast.as(org.bukkit.block.Sign.class, block.getState());
+    }
+    
+    public static Optional<org.bukkit.block.data.type.Sign> blockData(@NullOr Block block)
+    {
+        return (block == null) ? Optional.empty() : Cast.as(org.bukkit.block.data.type.Sign.class, block.getBlockData());
+    }
 }

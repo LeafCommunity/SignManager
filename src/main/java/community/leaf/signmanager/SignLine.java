@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2021, RezzedUp <https://github.com/LeafCommunity/SignManager>
+ * Copyright © 2016-2022, RezzedUp <https://github.com/LeafCommunity/SignManager>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -28,89 +28,89 @@ import java.util.stream.Stream;
 
 public class SignLine implements Persistent<PersistentDataContainer, SignLine>
 {
-	@SuppressWarnings("NullableProblems")
-	public static final PersistentDataType<PersistentDataContainer, SignLine> TYPE =
-		new PersistentDataType<>()
-		{
-			@Override
-			public Class<PersistentDataContainer> getPrimitiveType() { return PersistentDataContainer.class; }
-			
-			@Override
-			public Class<SignLine> getComplexType() { return SignLine.class; }
-			
-			@Override
-			public PersistentDataContainer toPrimitive(SignLine complex, PersistentDataAdapterContext context)
-			{
-				PersistentDataContainer data = context.newPersistentDataContainer();
-				
-				data.set(Keys.signManager("index"), PersistentDataTypes.BYTE, (byte) complex.index());
-				data.set(Keys.signManager("text"), PersistentDataTypes.STRING, complex.text());
-				
-				return data;
-			}
-			
-			@Override
-			public SignLine fromPrimitive(PersistentDataContainer primitive, PersistentDataAdapterContext context)
-			{
-				@NullOr Byte index = primitive.get(Keys.signManager("index"), PersistentDataTypes.BYTE);
-				if (index == null) { throw new NullPointerException("index"); }
-				
-				@NullOr String content = primitive.get(Keys.signManager("text"), PersistentDataTypes.STRING);
-				if (content == null) { throw new NullPointerException("text"); }
-				
-				return new SignLine(index.intValue(), content);
-			}
-		};
-	
-	public static Stream<SignLine> stream(String ... raw)
-	{
-		return IntStream.range(0, raw.length).sorted().mapToObj(index -> new SignLine(index, raw[index]));
-	}
-	
-	public static List<SignLine> list(String ... raw)
-	{
-		return stream(raw).collect(Collectors.toList());
-	}
-	
-	private static final String BLANK = ChatColor.translateAlternateColorCodes('&', "&8&o(Blank)");
-	
-	private final int index;
-	private final String text;
-	
-	public SignLine(int index, String text)
-	{
-		this.index = Signs.index(index);
-		this.text = Objects.requireNonNull(text, "text");
-	}
-	
-	@Override
-	public PersistentDataType<PersistentDataContainer, SignLine> persistentDataType() { return TYPE; }
-	
-	public int index() { return index; }
-	
-	public String text() { return text; }
-	
-	public void apply(Sign sign) { sign.setLine(index(), text); }
-	
-	public String toPlainText() { return ChatColor.stripColor(text); }
-	
-	public BaseComponent[] toPreview()
-	{
-		return TextComponent.fromLegacyText((text.isEmpty()) ? BLANK : text);
-	}
-	
-	@Override
-	public boolean equals(@NullOr Object o)
-	{
-		if (this == o) { return true; }
-		if (o == null || getClass() != o.getClass()) { return false; }
-		SignLine signLine = (SignLine) o;
-		return index == signLine.index && text.equals(signLine.text);
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(index, text);
-	}
+    @SuppressWarnings("NullableProblems")
+    public static final PersistentDataType<PersistentDataContainer, SignLine> TYPE =
+        new PersistentDataType<>()
+        {
+            @Override
+            public Class<PersistentDataContainer> getPrimitiveType() { return PersistentDataContainer.class; }
+            
+            @Override
+            public Class<SignLine> getComplexType() { return SignLine.class; }
+            
+            @Override
+            public PersistentDataContainer toPrimitive(SignLine complex, PersistentDataAdapterContext context)
+            {
+                PersistentDataContainer data = context.newPersistentDataContainer();
+                
+                data.set(Keys.signManager("index"), PersistentDataTypes.BYTE, (byte) complex.index());
+                data.set(Keys.signManager("text"), PersistentDataTypes.STRING, complex.text());
+                
+                return data;
+            }
+            
+            @Override
+            public SignLine fromPrimitive(PersistentDataContainer primitive, PersistentDataAdapterContext context)
+            {
+                @NullOr Byte index = primitive.get(Keys.signManager("index"), PersistentDataTypes.BYTE);
+                if (index == null) { throw new NullPointerException("index"); }
+                
+                @NullOr String content = primitive.get(Keys.signManager("text"), PersistentDataTypes.STRING);
+                if (content == null) { throw new NullPointerException("text"); }
+                
+                return new SignLine(index.intValue(), content);
+            }
+        };
+    
+    public static Stream<SignLine> stream(String ... raw)
+    {
+        return IntStream.range(0, raw.length).sorted().mapToObj(index -> new SignLine(index, raw[index]));
+    }
+    
+    public static List<SignLine> list(String ... raw)
+    {
+        return stream(raw).collect(Collectors.toList());
+    }
+    
+    private static final String BLANK = ChatColor.translateAlternateColorCodes('&', "&8&o(Blank)");
+    
+    private final int index;
+    private final String text;
+    
+    public SignLine(int index, String text)
+    {
+        this.index = Signs.index(index);
+        this.text = Objects.requireNonNull(text, "text");
+    }
+    
+    @Override
+    public PersistentDataType<PersistentDataContainer, SignLine> persistentDataType() { return TYPE; }
+    
+    public int index() { return index; }
+    
+    public String text() { return text; }
+    
+    public void apply(Sign sign) { sign.setLine(index(), text); }
+    
+    public String toPlainText() { return ChatColor.stripColor(text); }
+    
+    public BaseComponent[] toPreview()
+    {
+        return TextComponent.fromLegacyText((text.isEmpty()) ? BLANK : text);
+    }
+    
+    @Override
+    public boolean equals(@NullOr Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
+        SignLine signLine = (SignLine) o;
+        return index == signLine.index && text.equals(signLine.text);
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(index, text);
+    }
 }

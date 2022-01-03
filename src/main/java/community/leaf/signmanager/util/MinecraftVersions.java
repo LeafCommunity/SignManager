@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2021, RezzedUp <https://github.com/LeafCommunity/SignManager>
+ * Copyright © 2016-2022, RezzedUp <https://github.com/LeafCommunity/SignManager>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,22 +15,22 @@ import java.util.regex.Pattern;
 
 public class MinecraftVersions
 {
-	private MinecraftVersions() { throw new UnsupportedOperationException(); }
-	
-	public static final Version V1_16_0 = Version.forIntegers(1, 16);
-	
-	public static final Version V1_16_5 = Version.forIntegers(1, 16, 5);
-	
-	public static final Version V1_17_0 = Version.forIntegers(1, 17);
-	
-	public static final Version V1_17_1 = Version.forIntegers(1, 17, 1);
-	
-	public static final Version SERVER;
-	
-	static
-	{
-		Matcher matcher = Pattern.compile("\\d+\\.\\d+(\\.\\d+)?").matcher(Bukkit.getBukkitVersion());
-		if (!matcher.find()) { throw new IllegalStateException("Invalid Bukkit version: " + Bukkit.getBukkitVersion()); }
-		SERVER = Version.valueOf(matcher.group());
-	}
+    private MinecraftVersions() { throw new UnsupportedOperationException(); }
+    
+    public static final Version V1_16_0 = Version.forIntegers(1, 16);
+    
+    public static final Version V1_16_5 = Version.forIntegers(1, 16, 5);
+    
+    public static final Version V1_17_0 = Version.forIntegers(1, 17);
+    
+    public static final Version V1_17_1 = Version.forIntegers(1, 17, 1);
+    
+    public static final Version SERVER;
+    
+    static
+    {
+        Matcher matcher = Pattern.compile("\\d+\\.\\d+(\\.\\d+)?").matcher(Bukkit.getBukkitVersion());
+        if (!matcher.find()) { throw new IllegalStateException("Invalid Bukkit version: " + Bukkit.getBukkitVersion()); }
+        SERVER = Version.valueOf(matcher.group());
+    }
 }

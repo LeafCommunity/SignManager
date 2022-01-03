@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016-2021, RezzedUp <https://github.com/LeafCommunity/SignManager>
+ * Copyright © 2016-2022, RezzedUp <https://github.com/LeafCommunity/SignManager>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,49 +18,49 @@ import pl.tlinkowski.annotation.basic.NullOr;
 
 public class EntityHologramSource implements HologramSource
 {
-	public static final NamespacedKey HOLOGRAM_KEY = Keys.signManager("hologram");
-	
-	@Override
-	public Hologram showHologram(Player player, Location location, String text)
-	{
-		@NullOr World world = location.getWorld();
-		if (world == null) { throw new NullPointerException("Location has null world"); }
-		
-		Location base = Hologram.baseOffsetFromTopLocation(location);
-		
-		return new EntityHologram(
-			world.spawn(base, ArmorStand.class, armorStand ->
-			{
-				armorStand.setCollidable(false);
-				armorStand.setGravity(false);
-				armorStand.setInvulnerable(true);
-				armorStand.setPersistent(false);
-				armorStand.setVisible(false);
-				
-				armorStand.setCustomNameVisible(true);
-				armorStand.setCustomName(text);
-				
-				armorStand.getPersistentDataContainer().set(HOLOGRAM_KEY, PersistentDataTypes.BOOLEAN, true);
-			}
-		));
-	}
-	
-	static class EntityHologram implements Hologram
-	{
-		private final ArmorStand armorStand;
-		
-		EntityHologram(ArmorStand armorStand)
-		{
-			this.armorStand = armorStand;
-		}
-		
-		@Override
-		public Location location() { return armorStand.getLocation(); }
-		
-		@Override
-		public boolean isDestroyed() { return armorStand.isDead(); }
-		
-		@Override
-		public void destroy() { armorStand.remove(); }
-	}
+    public static final NamespacedKey HOLOGRAM_KEY = Keys.signManager("hologram");
+    
+    @Override
+    public Hologram showHologram(Player player, Location location, String text)
+    {
+        @NullOr World world = location.getWorld();
+        if (world == null) { throw new NullPointerException("Location has null world"); }
+        
+        Location base = Hologram.baseOffsetFromTopLocation(location);
+        
+        return new EntityHologram(
+            world.spawn(base, ArmorStand.class, armorStand ->
+            {
+                armorStand.setCollidable(false);
+                armorStand.setGravity(false);
+                armorStand.setInvulnerable(true);
+                armorStand.setPersistent(false);
+                armorStand.setVisible(false);
+                
+                armorStand.setCustomNameVisible(true);
+                armorStand.setCustomName(text);
+                
+                armorStand.getPersistentDataContainer().set(HOLOGRAM_KEY, PersistentDataTypes.BOOLEAN, true);
+            }
+        ));
+    }
+    
+    static class EntityHologram implements Hologram
+    {
+        private final ArmorStand armorStand;
+        
+        EntityHologram(ArmorStand armorStand)
+        {
+            this.armorStand = armorStand;
+        }
+        
+        @Override
+        public Location location() { return armorStand.getLocation(); }
+        
+        @Override
+        public boolean isDestroyed() { return armorStand.isDead(); }
+        
+        @Override
+        public void destroy() { armorStand.remove(); }
+    }
 }
